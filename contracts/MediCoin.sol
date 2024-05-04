@@ -7,11 +7,11 @@ import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Burnable.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 
-contract HealthToken is ERC20, ERC20Burnable, Ownable, ERC20Permit {
+contract MediCoin is ERC20, ERC20Burnable, Ownable, ERC20Permit {
     constructor(address initialOwner)
-        ERC20("HealthToken", "HTK")
+        ERC20("MediCoin", "MDC")
         Ownable(initialOwner)
-        ERC20Permit("HealthToken")
+        ERC20Permit("MediCoin")
     {}
 
     function mint(address to, uint256 amount) public onlyOwner {
