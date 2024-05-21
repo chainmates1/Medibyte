@@ -19,4 +19,4 @@ ignition/deployments/chain-31337
 #ipfs-api
 ipfs-api/node_modules
 ipfs-api/.env
-ipfs-api/nftjson.json
+ipfs-api/nftjson
