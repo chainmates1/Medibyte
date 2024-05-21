@@ -1,6 +1,6 @@
 node_modules
 .env
-
+.gitignore
 # Hardhat files
 /cache
 /artifacts
@@ -15,3 +15,8 @@ node_modules
 
 # Hardhat Ignition default folder for deployments against a local node
 ignition/deployments/chain-31337
+
+#ipfs-api
+ipfs-api/node_modules
+ipfs-api/.env
+ipfs-api/nftjson
