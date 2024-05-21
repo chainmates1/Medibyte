@@ -1,0 +1,19 @@
+{
+    "description" : " ",
+    "image": " ",
+    "name" : "",
+    "attribute"  : [
+        {
+            "trait_type": "Score", 
+            "value": ""
+        }, 
+        {
+            "trait_type": "Tokens", 
+            "value": ""
+        }, 
+        {
+            "trait_type": "Address", 
+            "value": ""
+        }
+    ]
+}
