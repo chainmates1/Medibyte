@@ -1,9 +1,11 @@
 import express from 'express';
 import patientDataRoutes from './routes/route.js';
 import apiKeyAuth from './middleware/apiKeyAuth.js';
+import dotenv from 'dotenv';
+dotenv.config();
 
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.json()); // For parsing JSON request bodies
