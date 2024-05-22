@@ -11,7 +11,7 @@ export const createFormData = async (jsonData) => {
 
   // Write JSON data to a file
   writeFileSync(jsonFilePath, JSON.stringify(jsonData, null, 2));
-  
+
   const formData = new FormData();
   const file = await fileFromPath(jsonFilePath);
   formData.append('Body', file, 'data.json');
