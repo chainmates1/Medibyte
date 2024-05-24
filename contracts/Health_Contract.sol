@@ -21,14 +21,19 @@ contract Health_Contract is FunctionsClient, ConfirmedOwner {
     error UnauthorizedDoctor(address caller);
     error UnexpectedRequestID(bytes32 requestId);
     error PatientNotFound(address patient);
+    error InvalidReferral(address referrer);
 
     event Response(bytes32 indexed requestId, bytes response, bytes err);
     event HealthScoreUpdated(uint256 tokenId, uint256 healthScore, uint256 tokensEarned);
     event RequestInitiated(address doctor, uint256 tokenId, uint256 timestamp);
+    event ReferralRegistered(address referrer, address referee);
 
     mapping(bytes32 => uint256) private requestIdToTokenId;
     mapping(bytes32 => address) private requestIdToPatient;
     mapping(address => bool) public authorizedDoctors;
+    mapping(address => address) public referrals;
+
+    uint256 public referralReward = 100 * 10 ** 18; // Example referral reward in tokens
 
     constructor(
         address router,
@@ -55,6 +60,15 @@ contract Health_Contract is FunctionsClient, ConfirmedOwner {
     // Function to revoke doctor's authorization
     function revokeDoctor(address doctor) external onlyOwner {
         authorizedDoctors[doctor] = false;
+    }
+
+    // Function to register a referral
+    function registerReferral(address referrer) external {
+        if (referrer == msg.sender) {
+            revert InvalidReferral(referrer);
+        }
+        referrals[msg.sender] = referrer;
+        emit ReferralRegistered(referrer, msg.sender);
     }
 
     function updatePatientHealthScore(
@@ -149,6 +163,13 @@ contract Health_Contract is FunctionsClient, ConfirmedOwner {
             }
 
             healthToken.mint(patient, tokensEarned);
+
+            // Handle referral reward
+            address referrer = referrals[patient];
+            if (referrer != address(0)) {
+                healthToken.mint(referrer, referralReward);
+                healthToken.mint(patient, referralReward);
+            }
 
             emit HealthScoreUpdated(tokenId, healthScore, tokensEarned);
         }
