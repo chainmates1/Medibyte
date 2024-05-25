@@ -27,11 +27,14 @@ contract Health_Contract is FunctionsClient, ConfirmedOwner {
     event HealthScoreUpdated(uint256 tokenId, uint256 healthScore, uint256 tokensEarned);
     event RequestInitiated(address doctor, uint256 tokenId, uint256 timestamp);
     event ReferralRegistered(address referrer, address referee);
+    event TestsSelected(address patient, uint8[] selectedTests);
+    event TestsCleared(address patient);
 
     mapping(bytes32 => uint256) private requestIdToTokenId;
     mapping(bytes32 => address) private requestIdToPatient;
     mapping(address => bool) public authorizedDoctors;
     mapping(address => address) public referrals;
+    mapping(address => uint8[10]) public patientTests; // Assuming we have 10 tests
 
     uint256 public referralReward = 100 * 10 ** 18; // Example referral reward in tokens
 
@@ -71,6 +74,23 @@ contract Health_Contract is FunctionsClient, ConfirmedOwner {
         emit ReferralRegistered(referrer, msg.sender);
     }
 
+    // Function for a patient to select and submit tests
+    function selectTests(uint8[] calldata selectedTests) external {
+        require(selectedTests.length <= 10, "Too many tests selected");
+        
+        uint8[10] storage tests = patientTests[msg.sender];
+        for (uint8 i = 0; i < 10; i++) {
+            tests[i] = 0; // Reset all tests
+        }
+        for (uint8 i = 0; i < selectedTests.length; i++) {
+            require(selectedTests[i] < 10, "Invalid test index");
+            tests[selectedTests[i]] = 1; // Mark selected tests
+        }
+
+        emit TestsSelected(msg.sender, selectedTests);
+    }
+
+    // Function to update patient health score
     function updatePatientHealthScore(
         string memory source,
         bytes memory encryptedSecretsUrls,
@@ -170,6 +190,10 @@ contract Health_Contract is FunctionsClient, ConfirmedOwner {
                 healthToken.mint(referrer, referralReward);
                 healthToken.mint(patient, referralReward);
             }
+
+            // Clear the test selections for the patient
+            delete patientTests[patient];
+            emit TestsCleared(patient);
 
             emit HealthScoreUpdated(tokenId, healthScore, tokensEarned);
         }
