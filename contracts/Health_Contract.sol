@@ -31,24 +31,21 @@ contract Health_Contract is FunctionsClient, ConfirmedOwner {
     error UnexpectedRequestID(bytes32 requestId);
     error PatientNotFound(address patient);
     error InvalidReferral(address referrer);
-    error InsufficientBalance(uint256 required, uint256 available);
+
 
     event Response(bytes32 indexed requestId, bytes response, bytes err);
     event HealthScoreUpdated(uint256 tokenId, uint256 healthScore, uint256 tokensEarned);
     event RequestInitiated(address doctor, uint256 tokenId, uint256 timestamp);
     event ReferralRegistered(address referrer, address referee);
+
     event TestsSelected(address indexed patient, uint8[] selectedTests); // Added indexed modifier for patient address
     event TestsCleared(address patient);
-    event RewardClaimed(address patient, address rewardContract, uint256 tokenId);
 
     mapping(bytes32 => uint256) private requestIdToTokenId;
     mapping(bytes32 => address) private requestIdToPatient;
     mapping(address => bool) public authorizedDoctors;
     mapping(address => address) public referrals;
     mapping(address => uint8[10]) public patientTests; // Assuming we have 10 tests
-
-    mapping(address => uint256) public rewardThresholds;
-    mapping(address => bool) public patientsWithTestsSelected; // Tracks patients who have selected tests
 
     uint256 public referralReward = 100 * 10 ** 18; // Example referral reward in tokens
 
@@ -107,40 +104,8 @@ contract Health_Contract is FunctionsClient, ConfirmedOwner {
             tests[selectedTests[i]] = 1; // Mark selected tests
         }
 
-        patientsWithTestsSelected[msg.sender] = true; // Mark that this patient has selected tests
-
         emit TestsSelected(msg.sender, selectedTests); // Emit event with patient's address
-    }
-
-    // Function to set reward thresholds
-    function setRewardThreshold(address rewardContract, uint256 threshold) external onlyOwner {
-        rewardThresholds[rewardContract] = threshold;
-    }
-
-    // Function to claim reward NFT
-    function claimReward(address rewardContract) external {
-        uint256 threshold = rewardThresholds[rewardContract];
-        require(threshold > 0, "Reward not available");
-
-        uint256 patientBalance = healthToken.balanceOf(msg.sender);
-        if (patientBalance < threshold) {
-            revert InsufficientBalance(threshold, patientBalance);
-        }
-
-        healthToken.transferFrom(msg.sender, owner(), threshold);
-
-        uint256 tokenId;
-        if (rewardContract == address(healthInsuranceNFT)) {
-            tokenId = healthInsuranceNFT.mint(msg.sender);
-        } else if (rewardContract == address(freeHealthKitNFT)) {
-            tokenId = freeHealthKitNFT.mint(msg.sender);
-        } else if (rewardContract == address(freeHealthCheckupNFT)) {
-            tokenId = freeHealthCheckupNFT.mint(msg.sender);
-        } else {
-            revert("Invalid reward contract");
-        }
-
-        emit RewardClaimed(msg.sender, rewardContract, tokenId);
+    
     }
 
     // Function to update patient health score
@@ -216,6 +181,17 @@ contract Health_Contract is FunctionsClient, ConfirmedOwner {
             }
 
             healthToken.mint(patient, tokensEarned);
+
+            // Handle referral reward
+            address referrer = referrals[patient];
+            if (referrer != address(0)) {
+                healthToken.mint(referrer, referralReward);
+                healthToken.mint(patient, referralReward);
+            }
+
+            // Clear the test selections for the patient
+            delete patientTests[patient];
+            emit TestsCleared(patient);
 
             emit HealthScoreUpdated(tokenId, healthScore, tokensEarned);
         }
