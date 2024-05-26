@@ -5,14 +5,23 @@ import {FunctionsClient} from "@chainlink/contracts/src/v0.8/functions/v1_0_0/Fu
 import {ConfirmedOwner} from "@chainlink/contracts/src/v0.8/shared/access/ConfirmedOwner.sol";
 import {FunctionsRequest} from "@chainlink/contracts/src/v0.8/functions/v1_0_0/libraries/FunctionsRequest.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/Strings.sol";
 import "./MediCoin.sol";
 import "./PatientNFT.sol";
+import "./HealthInsuranceNFT.sol";
+import "./FreeHealthKitNFT.sol";
+import "./FreeHealthCheckupNFT.sol";
 
 contract Health_Contract is FunctionsClient, ConfirmedOwner {
     using FunctionsRequest for FunctionsRequest.Request;
+    using Strings for uint256;
+    using Strings for address;
 
     PatientNFT public patientNFT;
     MediCoin public healthToken;
+    HealthInsuranceNFT public healthInsuranceNFT;
+    FreeHealthKitNFT public freeHealthKitNFT;
+    FreeHealthCheckupNFT public freeHealthCheckupNFT;
 
     bytes32 public s_lastRequestId;
     bytes public s_lastResponse;
@@ -23,11 +32,13 @@ contract Health_Contract is FunctionsClient, ConfirmedOwner {
     error PatientNotFound(address patient);
     error InvalidReferral(address referrer);
 
+
     event Response(bytes32 indexed requestId, bytes response, bytes err);
     event HealthScoreUpdated(uint256 tokenId, uint256 healthScore, uint256 tokensEarned);
     event RequestInitiated(address doctor, uint256 tokenId, uint256 timestamp);
     event ReferralRegistered(address referrer, address referee);
-    event TestsSelected(address patient, uint8[] selectedTests);
+
+    event TestsSelected(address indexed patient, uint8[] selectedTests); // Added indexed modifier for patient address
     event TestsCleared(address patient);
 
     mapping(bytes32 => uint256) private requestIdToTokenId;
@@ -41,10 +52,16 @@ contract Health_Contract is FunctionsClient, ConfirmedOwner {
     constructor(
         address router,
         address _patientNFT,
-        address _healthToken
+        address _healthToken,
+        address _healthInsuranceNFT,
+        address _freeHealthKitNFT,
+        address _freeHealthCheckupNFT
     ) FunctionsClient(router) ConfirmedOwner(msg.sender) {
         patientNFT = PatientNFT(_patientNFT);
         healthToken = MediCoin(_healthToken);
+        healthInsuranceNFT = HealthInsuranceNFT(_healthInsuranceNFT);
+        freeHealthKitNFT = FreeHealthKitNFT(_freeHealthKitNFT);
+        freeHealthCheckupNFT = FreeHealthCheckupNFT(_freeHealthCheckupNFT);
     }
 
     // Modifier to check if the caller is an authorized doctor
@@ -87,7 +104,8 @@ contract Health_Contract is FunctionsClient, ConfirmedOwner {
             tests[selectedTests[i]] = 1; // Mark selected tests
         }
 
-        emit TestsSelected(msg.sender, selectedTests);
+        emit TestsSelected(msg.sender, selectedTests); // Emit event with patient's address
+    
     }
 
     // Function to update patient health score
@@ -102,21 +120,19 @@ contract Health_Contract is FunctionsClient, ConfirmedOwner {
         address patient,
         uint256 amountPaid
     ) external onlyAuthorizedDoctor {
+        require(patientsWithTestsSelected[patient], "No tests selected by patient"); // Ensure patient has selected tests
+        
         uint256 tokenId = patientNFT.getTokenIdByPatient(patient);
         string memory uri = "";
 
-        // Check if the patient already has an NFT
         if (tokenId != 0) {
             uri = patientNFT.tokenURI(tokenId);
         }
 
-        // Fetch the balance of health tokens for the patient
         uint256 tokenBalance = healthToken.balanceOf(patient);
 
-        // Log the transaction details
         emit RequestInitiated(msg.sender, tokenId, block.timestamp);
 
-        // Initialize and send the request
         FunctionsRequest.Request memory req;
         req.initializeRequestForInlineJavaScript(source);
         if (encryptedSecretsUrls.length > 0) {
@@ -125,36 +141,20 @@ contract Health_Contract is FunctionsClient, ConfirmedOwner {
             req.addDONHostedSecrets(donHostedSecretsSlotID, donHostedSecretsVersion);
         }
 
-        // Set arguments for the request
         string[] memory args = new string[](4);
         args[0] = uri;
-        args[1] = toAsciiString(patient);
-        args[2] = uintToString(amountPaid);
-        args[3] = uintToString(tokenBalance);
+        args[1] = patient.toHexString();
+        args[2] = amountPaid.toString();
+        args[3] = tokenBalance.toString();
 
         req.setArgs(args);
 
         s_lastRequestId = _sendRequest(req.encodeCBOR(), subscriptionId, gasLimit, donID);
 
-        // Map the request ID to the token ID and patient address
         requestIdToTokenId[s_lastRequestId] = tokenId;
         requestIdToPatient[s_lastRequestId] = patient;
     }
 
-    /**
-     * @dev Internal function to process the outcome of a data request. It stores the latest response or error and updates the contract state accordingly. This function is designed to handle only one of `response` or `err` at a time, not both. It decodes the response if present and emits events to log both raw and decoded data.
-     *
-     * @param requestId The unique identifier of the request, originally returned by `sendRequest`. Used to match responses with requests.
-     * @param response The raw aggregated response data from the external source. This data is ABI-encoded and is expected to contain specific information (e.g., healthScore, tokensEarned, newUri) if no error occurred. The function attempts to decode this data if `response` is not empty.
-     * @param err The raw aggregated error information, indicating an issue either from the user's code or within the execution of the user Chainlink Function.
-     *
-     * Emits a `DecodedResponse` event if the `response` is successfully decoded, providing detailed information about the data received.
-     * Emits a `Response` event for every call to log the raw response and error data.
-     *
-     * Requirements:
-     * - The `requestId` must match the last stored request ID to ensure the response corresponds to the latest request sent.
-     * - Only one of `response` or `err` should contain data for a given call; the other should be empty.
-     */
     function fulfillRequest(
         bytes32 requestId,
         bytes memory response,
@@ -173,12 +173,10 @@ contract Health_Contract is FunctionsClient, ConfirmedOwner {
             uint256 tokenId = requestIdToTokenId[requestId];
             address patient = requestIdToPatient[requestId];
 
-            // If the patient doesn't have an NFT, mint one with the provided URI
             if (tokenId == 0) {
                 patientNFT.safeMint(patient, newUri);
                 tokenId = patientNFT.getTokenIdByPatient(patient);
             } else {
-                // Update the existing NFT with the new URI
                 patientNFT.setTokenURI(tokenId, newUri);
             }
 
@@ -199,43 +197,9 @@ contract Health_Contract is FunctionsClient, ConfirmedOwner {
         }
 
         emit Response(requestId, response, err);
-    }
 
-    // Helper function to convert uint256 to string
-    function uintToString(uint256 value) internal pure returns (string memory) {
-        if (value == 0) {
-            return "0";
-        }
-        uint256 temp = value;
-        uint256 digits;
-        while (temp != 0) {
-            digits++;
-            temp /= 10;
-        }
-        bytes memory buffer = new bytes(digits);
-        while (value != 0) {
-            digits -= 1;
-            buffer[digits] = bytes1(uint8(48 + uint256(value % 10)));
-            value /= 10;
-        }
-        return string(buffer);
-    }
-
-    // Helper function to convert address to string
-    function toAsciiString(address x) internal pure returns (string memory) {
-        bytes memory s = new bytes(40);
-        for (uint256 i = 0; i < 20; i++) {
-            bytes1 b = bytes1(uint8(uint256(uint160(x)) / (2**(8*(19 - i)))));
-            bytes1 hi = bytes1(uint8(b) / 16);
-            bytes1 lo = bytes1(uint8(b) - 16 * uint8(hi));
-            s[2*i] = char(hi);
-            s[2*i+1] = char(lo);
-        }
-        return string(s);
-    }
-
-    function char(bytes1 b) internal pure returns (bytes1 c) {
-        if (uint8(b) < 10) return bytes1(uint8(b) + 0x30);
-        else return bytes1(uint8(b) + 0x57);
+        delete patientTests[requestIdToPatient[requestId]];
+        patientsWithTestsSelected[requestIdToPatient[requestId]] = false; // Clear the flag indicating tests selected
+        emit TestsCleared(requestIdToPatient[requestId]);
     }
 }
