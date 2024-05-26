@@ -46,9 +46,8 @@ contract Health_Contract is FunctionsClient, ConfirmedOwner {
     mapping(address => bool) public authorizedDoctors;
     mapping(address => address) public referrals;
     mapping(address => uint8[10]) public patientTests; // Assuming we have 10 tests
-
     mapping(address => uint256) public rewardThresholds;
-    mapping(address => bool) public patientsWithTestsSelected; // Tracks patients who have selected tests
+
 
     uint256 public referralReward = 100 * 10 ** 18; // Example referral reward in tokens
 
@@ -106,8 +105,6 @@ contract Health_Contract is FunctionsClient, ConfirmedOwner {
             require(selectedTests[i] < 10, "Invalid test index");
             tests[selectedTests[i]] = 1; // Mark selected tests
         }
-
-        patientsWithTestsSelected[msg.sender] = true; // Mark that this patient has selected tests
 
         emit TestsSelected(msg.sender, selectedTests); // Emit event with patient's address
     }
@@ -216,14 +213,19 @@ contract Health_Contract is FunctionsClient, ConfirmedOwner {
             }
 
             healthToken.mint(patient, tokensEarned);
+            // Handle referral reward
+            address referrer = referrals[patient];
+            if (referrer != address(0)) {
+                healthToken.mint(referrer, referralReward);
+                healthToken.mint(patient, referralReward);
+            }
 
+            emit Response(requestId, response, err);
+            delete patientTests[patient];
+            emit TestsCleared(patient);
             emit HealthScoreUpdated(tokenId, healthScore, tokensEarned);
         }
 
-        emit Response(requestId, response, err);
-
-        delete patientTests[requestIdToPatient[requestId]];
-        patientsWithTestsSelected[requestIdToPatient[requestId]] = false; // Clear the flag indicating tests selected
-        emit TestsCleared(requestIdToPatient[requestId]);
+        
     }
 }
