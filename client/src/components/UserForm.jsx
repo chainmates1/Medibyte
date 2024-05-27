@@ -1,7 +1,12 @@
+// UserForm.js
 import React, { useState } from "react";
+import { useUser } from "../UserContext";
 
 const UserForm = () => {
+  const { account, contract } = useUser();
   const [showDescriptions, setShowDescriptions] = useState([]);
+  const [selectedTests, setSelectedTests] = useState([]);
+
   const tests = [
     { id: 1, name: "Blood Test", description: "A test to check your blood." },
     { id: 2, name: "X-Ray", description: "An imaging test to view bones." },
@@ -23,10 +28,34 @@ const UserForm = () => {
     }
   };
 
+  const handleTestSelection = (id) => {
+    if (selectedTests.includes(id)) {
+      setSelectedTests(selectedTests.filter(testId => testId !== id));
+    } else {
+      setSelectedTests([...selectedTests, id]);
+    }
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (contract) {
+      try {
+        const tx = await contract.selectTests(selectedTests);
+        await tx.wait();
+        alert("Tests selected successfully!");
+      } catch (error) {
+        console.error("Error selecting tests:", error);
+        alert("Error selecting tests.");
+      }
+    } else {
+      alert("Smart contract is not loaded.");
+    }
+  };
+
   return (
     <div className="w-full md:w-2/3 p-4">
       <h2 className="text-2xl font-semibold mb-4">Select Tests</h2>
-      <form className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         {tests.map(test => (
           <div key={test.id} className="border p-4 rounded shadow">
             <div className="flex items-center justify-between">
@@ -35,6 +64,7 @@ const UserForm = () => {
                   type="checkbox"
                   id={`test-${test.id}`}
                   className="mr-2"
+                  onChange={() => handleTestSelection(test.id)}
                 />
                 <label
                   htmlFor={`test-${test.id}`}

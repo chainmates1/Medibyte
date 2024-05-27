@@ -1,14 +1,48 @@
-import { useLocation } from "react-router-dom";
+import { useLocation, Link, useNavigate } from "react-router-dom";
 import { disablePageScroll, enablePageScroll } from "scroll-lock";
 import { navigation } from "../constants/data";
 import Button from "./Button";
 import MenuSvg from "../assets/svg/MenuSvg";
 import { HamburgerMenu } from "./design/Header";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { ethers } from "ethers";
+import HealthContract from "../abis/Health_Contract.json";
+import { useUser } from "../UserContext";
 
 const Header = () => {
   const pathname = useLocation();
   const [openNavigation, setOpenNavigation] = useState(false);
+  const { account, setAccount, contract, setContract } = useUser();
+  const [isConnected, setIsConnected] = useState(false);
+  const navigate = useNavigate();
+
+  const connectWallet = async () => {
+    try {
+      if (window.ethereum) {
+        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+        const account = accounts[0];
+        setAccount(account);
+        setIsConnected(true);
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const contractAddress = "0x"; 
+        const contract = new ethers.Contract(contractAddress, HealthContract.abi, signer);
+        setContract(contract);
+      } else {
+        alert("MetaMask extension not detected. Please install MetaMask.");
+      }
+      
+      // navigate("/user");
+    } catch (error) {
+      console.error("Error connecting to MetaMask:", error);
+    }
+    // if(signer !== "0x"){
+    //   navigate("/admin")
+    // }else{
+    //   navigate("/user");
+    // }
+    navigate("/user");
+  };
 
   const toggleNavigation = () => {
     if (openNavigation) {
@@ -27,9 +61,44 @@ const Header = () => {
     setOpenNavigation(false);
   };
 
+  useEffect(() => {
+    const checkConnection = async () => {
+      try {
+        if (window.ethereum) {
+          const accounts = await window.ethereum.request({ method: "eth_accounts" });
+          if (accounts.length > 0) {
+            const account = accounts[0];
+            setAccount(account);
+            setIsConnected(true);
+            const provider = new ethers.providers.Web3Provider(window.ethereum);
+            const signer = provider.getSigner();
+            const contractAddress = "0x";
+            const contract = new ethers.Contract(contractAddress, HealthContract.abi, signer);
+            setContract(contract);
+          } else {
+            setIsConnected(false);
+            setAccount("");
+          }
+        } else {
+          setIsConnected(false);
+          setAccount("");
+        }
+      } catch (error) {
+        console.error("Error checking MetaMask connection:", error);
+        setIsConnected(false);
+        setAccount("");
+      }
+    };
+
+    checkConnection();
+    window.ethereum.on("accountsChanged", (accounts) => {
+      checkConnection();
+    });
+  }, [setIsConnected, setAccount]);
+
   return (
     <div
-      className={`fixed top-0 left-0 w-full z-50  border-b border-n-6 lg:bg-n-8/90 lg:backdrop-blur-sm ${
+      className={`fixed top-0 left-0 w-full z-50 border-b border-n-6 lg:bg-n-8/90 lg:backdrop-blur-sm ${
         openNavigation ? "bg-n-8" : "bg-n-8/90 backdrop-blur-sm"
       }`}
     >
@@ -52,9 +121,7 @@ const Header = () => {
                 className={`block relative font-code text-2xl uppercase text-n-1 transition-colors hover:text-color-1 ${
                   item.onlyMobile ? "lg:hidden" : ""
                 } px-6 py-6 md:py-8 lg:-mr-0.25 lg:text-sm lg:font-semibold ${
-                  item.url === pathname.hash
-                    ? "z-2 lg:text-n-1"
-                    : "lg:text-n-1/50"
+                  item.url === pathname.hash ? "z-2 lg:text-n-1" : "lg:text-n-1/50"
                 } lg:leading-5 lg:hover:text-n-1 xl:px-12`}
               >
                 {item.title}
@@ -71,42 +138,37 @@ const Header = () => {
         >
           New account
         </a>
-        {/* <Button className="hidden lg:flex" href="#login">
-          Connect your Wallet
-        </Button> */}
-        {/* <a href="#_" className="relative inline-block text-lg group">
-            <span className="relative z-10 block px-5 py-3 overflow-hidden font-medium leading-tight text-gray-800 transition-colors duration-300 ease-out border-2 border-gray-900 rounded-lg group-hover:text-white">
-              <span className="absolute inset-0 w-full h-full px-5 py-3 rounded-lg bg-gray-50"></span>
-              <span className="absolute left-0 w-48 h-48 -ml-2 transition-all duration-300 origin-top-right -rotate-90 -translate-x-full translate-y-12 bg-gray-900 group-hover:-rotate-180 ease"></span>
-              <span className="relative font-black text-sm">Connect your wallet</span>
-            </span>
-            <span
-              className="absolute bottom-0 right-0 w-full h-12 -mb-1 -mr-1 transition-all duration-200 ease-linear bg-green-400 rounded-lg group-hover:mb-0 group-hover:mr-0"
-              data-rounded="rounded-lg"
-            ></span>
-          </a> */}
-        <a
-          href="#_"
-          className="relative inline-block text-lg group lg:inline-block hidden"
-        >
-          <span className="relative z-10 block px-5 py-3 overflow-hidden font-medium leading-tight text-gray-800 transition-colors duration-300 ease-out border-2 border-gray-900 rounded-lg group-hover:text-white">
-            <span className="absolute inset-0 w-full h-full px-5 py-3 rounded-lg bg-gray-50"></span>
-            <span className="absolute left-0 w-48 h-48 -ml-2 transition-all duration-300 origin-top-right -rotate-90 -translate-x-full translate-y-12 bg-gray-900 group-hover:-rotate-180 ease"></span>
-            <span className="relative font-black text-sm">
-              Connect your wallet
-            </span>
-          </span>
-          <span
-            className="absolute bottom-0 right-0 w-full h-12 -mb-1 -mr-1 transition-all duration-200 ease-linear bg-green-400 rounded-lg group-hover:mb-0 group-hover:mr-0"
-            data-rounded="rounded-lg"
-          ></span>
-        </a>
 
         <Button
-          className="ml-auto lg:hidden"
-          px="px-3"
-          onClick={toggleNavigation}
+          onClick={isConnected ? null : connectWallet}
+          className={`relative inline-block text-lg group lg:inline-block hidden ${
+            isConnected ? "cursor-default" : ""
+          }`}
         >
+          {isConnected ? (
+            <span className="relative z-10 block px-5 py-3 overflow-hidden font-medium leading-tight text-green-500 border-2 border-green-500 rounded-lg">
+              <span className="absolute inset-0 w-full h-full px-5 py-3 rounded-lg bg-gray-50"></span>
+              <span className="absolute left-0 w-48 h-48 -ml-2 transition-all duration-300 origin-top-right -rotate-90 -translate-x-full translate-y-12 bg-gray-900 group-hover:-rotate-180 ease"></span>
+              <span className="relative font-black text-sm">
+                Connected: {`${account.substring(0, 3)}...${account.slice(-3)}`}
+              </span>
+            </span>
+          ) : (
+            <>
+              <span className="relative z-10 block px-5 py-3 overflow-hidden font-medium leading-tight text-gray-800 transition-colors duration-300 ease-out border-2 border-gray-900 rounded-lg group-hover:text-white">
+                <span className="absolute inset-0 w-full h-full px-5 py-3 rounded-lg bg-gray-50"></span>
+                <span className="absolute left-0 w-48 h-48 -ml-2 transition-all duration-300 origin-top-right -rotate-90 -translate-x-full translate-y-12 bg-gray-900 group-hover:-rotate-180 ease"></span>
+                <span className="relative font-black text-sm">Connect your wallet</span>
+              </span>
+              <span
+                className="absolute bottom-0 right-0 w-full h-12 -mb-1 -mr-1 transition-all duration-200 ease-linear bg-green-400 rounded-lg group-hover:mb-0 group-hover:mr-0"
+                data-rounded="rounded-lg"
+              ></span>
+            </>
+          )}
+        </Button>
+
+        <Button className="ml-auto lg:hidden" px="px-3" onClick={toggleNavigation}>
           <MenuSvg openNavigation={openNavigation} />
         </Button>
       </div>
