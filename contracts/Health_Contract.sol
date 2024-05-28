@@ -152,7 +152,7 @@ contract Health_Contract is FunctionsClient, ConfirmedOwner {
         address patient,
         uint256 amountPaid
     ) external onlyAuthorizedDoctor {
-        require(patientsWithTestsSelected[patient], "No tests selected by patient"); // Ensure patient has selected tests
+        
         
         uint256 tokenId = patientNFT.getTokenIdByPatient(patient);
         string memory uri = "";

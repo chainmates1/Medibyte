@@ -7,13 +7,12 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 contract FreeHealthKitNFT is ERC721URIStorage, Ownable {
     uint256 private _tokenIdCounter;
 
-    constructor() ERC721("FreeHealthKitNFT", "FHK") {}
+    constructor() ERC721("FreeHealthKitNFT", "FHK") Ownable(msg.sender) {}
 
-    function mint(address to, string memory uri) public onlyOwner returns (uint256) {
+    function mint(address to) public onlyOwner returns (uint256) {
         uint256 tokenId = _tokenIdCounter;
         _tokenIdCounter++;
         _safeMint(to, tokenId);
-        _setTokenURI(tokenId, uri);
         return tokenId;
     }
 

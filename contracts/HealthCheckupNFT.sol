@@ -8,7 +8,7 @@ contract FreeHealthCheckupNFT is ERC721URIStorage, Ownable {
     uint256 private _tokenIdCounter;
     string private constant defaultURI = "ipfs://free-health-checkup-default-metadata";
 
-    constructor() ERC721("FreeHealthCheckupNFT", "FHC") {}
+    constructor() ERC721("FreeHealthCheckupNFT", "FHC") Ownable(msg.sender) {}
 
     function mint(address to) public onlyOwner returns (uint256) {
         uint256 tokenId = _tokenIdCounter;

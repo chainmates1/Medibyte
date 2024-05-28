@@ -8,7 +8,7 @@ contract HealthInsuranceNFT is ERC721URIStorage, Ownable {
     uint256 private _tokenIdCounter;
     string private constant defaultURI = "ipfs://health-insurance-default-metadata";
 
-    constructor() ERC721("HealthInsuranceNFT", "HIN") {}
+    constructor() ERC721("HealthInsuranceNFT", "HIN") Ownable(msg.sender){}
 
     function mint(address to) public onlyOwner returns (uint256) {
         uint256 tokenId = _tokenIdCounter;
