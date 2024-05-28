@@ -1,4 +1,5 @@
 import ButtonGradient from "../assets/svg/ButtonGradient";
+import Benefits from "../components/Benefits";
 import Header from "../components/header";
 import Hero from "../components/Hero";
 
@@ -9,6 +10,7 @@ const Home = () => {
         {/* configure lg:pt-[0.1rem] to your needs, original was 5.25rem */}
        <Header />
        <Hero /> 
+       <Benefits />
       </div>
       <ButtonGradient />
     </>
