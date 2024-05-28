@@ -1,4 +1,4 @@
-import { useLocation, Link, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { disablePageScroll, enablePageScroll } from "scroll-lock";
 import { navigation } from "../constants/data";
 import Button from "./Button";
@@ -17,7 +17,7 @@ const Header = () => {
   const navigate = useNavigate();
 
   const connectWallet = async () => {
-    try {
+    try { 
       if (window.ethereum) {
         const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
         const account = accounts[0];
@@ -132,14 +132,14 @@ const Header = () => {
           <HamburgerMenu />
         </nav>
 
-        <a
+        {/* <a
           href="#signup"
           className="button hidden mr-8 text-n-1/50 transition-colors hover:text-n-1 lg:block"
         >
           New account
-        </a>
+        </a> */}
 
-        <Button
+        <button
           onClick={isConnected ? null : connectWallet}
           className={`relative inline-block text-lg group lg:inline-block hidden ${
             isConnected ? "cursor-default" : ""
@@ -166,7 +166,7 @@ const Header = () => {
               ></span>
             </>
           )}
-        </Button>
+        </button>
 
         <Button className="ml-auto lg:hidden" px="px-3" onClick={toggleNavigation}>
           <MenuSvg openNavigation={openNavigation} />

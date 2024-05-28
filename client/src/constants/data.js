@@ -188,6 +188,32 @@ export const benefits = [
     iconUrl: benefitIcon2,
     imageUrl: backgroundimg,
   },
+  {
+    id: "6",
+    title: "Intuitive UI/UX",
+    text: "Enjoy a user-friendly interface designed to make navigating your health journey simple and engaging.",
+    backgroundUrl: "./src/assets/benefits/card-7.svg",
+    iconUrl: benefitIcon4,
+    imageUrl: backgroundimg,
+},
+{
+    id: "7",
+    title: "Seamless Transitions",
+    text: "Experience smooth transitions between features, ensuring a seamless and enjoyable user experience.",
+    backgroundUrl: "./src/assets/benefits/card-8.svg",
+    iconUrl: benefitIcon1,
+    imageUrl: backgroundimg,
+    light: true,
+},
+{
+    id: "8",
+    title: "Easy Wallet Connection",
+    text: "Effortlessly connect your digital wallet to manage and redeem health tokens and NFTs with ease.",
+    backgroundUrl: "./src/assets/benefits/card-9.svg",
+    iconUrl: benefitIcon2,
+    imageUrl: backgroundimg,
+}
+
 ];
 
 export const socials = [
