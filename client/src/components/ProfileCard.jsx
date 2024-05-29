@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
 import { Navigate } from 'react-router-dom';
-
-const PatientNFT_ADDRESS = "0xYourPatientNFTContractAddress";
-const PatientNFT_ABI = [
-  "function getTokenId(address _owner) view returns (uint256)"
-];
+import patAbi from '../abis/PatientNFT.json';
+const PatientNFT_ADDRESS = import.meta.env.VITE_PAT_NFT_ADDRESS;
 
 const getNFTId = async (provider, walletAddress) => {
-  const contract = new ethers.Contract(PatientNFT_ADDRESS, PatientNFT_ABI, provider);
-  const tokenId = await contract.getTokenId(walletAddress);
-  return tokenId.toNumber(); 
+  const contract = new ethers.Contract(PatientNFT_ADDRESS, patAbi, provider);
+  const tokenId = await contract.getTokenIdByPatient(walletAddress);
+  return Number(tokenId); 
 };
 
 const fetchNFTDataFromOpenSea = async (tokenId) => {
@@ -35,28 +32,29 @@ const ProfileCard = () => {
 
   useEffect(() => {
     const fetchNFTData = async () => {
-      if (!window.ethereum) return;
-
       try {
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-        const account = accounts[0];
-        setAccount(account);
-
-        const tokenId = await getNFTId(provider, account);
-        if (!tokenId) {
-          setLoading(false);
-          return;
+        if(window.ethereum){
+          const provider = new ethers.BrowserProvider(window.ethereum);
+          const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+          const account = accounts[0];
+          setAccount(account);
+          const tokenId = await getNFTId(provider, account);
+          // console.log(tokenId);
+          if (!tokenId) {
+            setLoading(false);
+            return;
+          }
+          const data = await fetchNFTDataFromOpenSea(tokenId);
+          setNftData(data);
+        }else{
+          alert("MetaMask extension not detected. Please install MetaMask.")
         }
-        const data = await fetchNFTDataFromOpenSea(tokenId);
-        setNftData(data);
       } catch (error) {
         console.error("Error fetching NFT data:", error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchNFTData();
   }, []);
 
