@@ -11,17 +11,15 @@ const PatientsSheet = () => {
     const fetchPatients = async () => {
       try {
         if (!window.ethereum) {
+          alert("MetaMask extension not detected. Please install MetaMask.")
           console.error('MetaMask is not installed');
           return;
         }
-
-        await window.ethereum.request({ method: 'eth_requestAccounts' });
-
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const contractAddress = '0x'; 
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const contractAddress = import.meta.env.VITE_CONTRACT_ADDRESS; 
         const contractABI = abi;
         contract = new ethers.Contract(contractAddress, contractABI, provider);
-
+        
         contract.on('TestsSelected', (patientAddress, selectedTests) => {
           setPatients(prevPatients => [...prevPatients, { address: patientAddress, selectedTests }]);
         });

@@ -6,42 +6,31 @@ import MenuSvg from "../assets/svg/MenuSvg";
 import { HamburgerMenu } from "./design/Header";
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
-import HealthContract from "../abis/Health_Contract.json";
 import { useUser } from "../UserContext";
 
 const Header = () => {
   const pathname = useLocation();
   const [openNavigation, setOpenNavigation] = useState(false);
-  const { account, setAccount, contract, setContract } = useUser();
+  const { account, setAccount} = useUser();
   const [isConnected, setIsConnected] = useState(false);
   const navigate = useNavigate();
 
   const connectWallet = async () => {
-    try { 
+    try {
       if (window.ethereum) {
         const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
         const account = accounts[0];
         setAccount(account);
         setIsConnected(true);
-        const provider = new ethers.providers.Web3Provider(window.ethereum);
-        const signer = provider.getSigner();
-        const contractAddress = "0x"; 
-        const contract = new ethers.Contract(contractAddress, HealthContract.abi, signer);
-        setContract(contract);
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner();
+        navigate("/user");
       } else {
         alert("MetaMask extension not detected. Please install MetaMask.");
       }
-      
-      // navigate("/user");
     } catch (error) {
       console.error("Error connecting to MetaMask:", error);
     }
-    // if(signer !== "0x"){
-    //   navigate("/admin")
-    // }else{
-    //   navigate("/user");
-    // }
-    navigate("/user");
   };
 
   const toggleNavigation = () => {
@@ -70,16 +59,15 @@ const Header = () => {
             const account = accounts[0];
             setAccount(account);
             setIsConnected(true);
-            const provider = new ethers.providers.Web3Provider(window.ethereum);
-            const signer = provider.getSigner();
-            const contractAddress = "0x";
-            const contract = new ethers.Contract(contractAddress, HealthContract.abi, signer);
-            setContract(contract);
+            const provider =new ethers.BrowserProvider(window.ethereum);
+            const signer = await provider.getSigner();
+            // console.log(signer.address);
           } else {
             setIsConnected(false);
             setAccount("");
           }
         } else {
+          console.log("MetaMask not installed");
           setIsConnected(false);
           setAccount("");
         }

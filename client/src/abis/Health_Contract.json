@@ -1,583 +1,744 @@
 [
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "router",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_patientNFT",
-        "type": "address"
-      },
-      {
-        "internalType": "address",
-        "name": "_healthToken",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "nonpayable",
-    "type": "constructor"
-  },
-  {
-    "inputs": [],
-    "name": "EmptyArgs",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "EmptySecrets",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "EmptySource",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "referrer",
-        "type": "address"
-      }
-    ],
-    "name": "InvalidReferral",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "NoInlineSecrets",
-    "type": "error"
-  },
-  {
-    "inputs": [],
-    "name": "OnlyRouterCanFulfill",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "patient",
-        "type": "address"
-      }
-    ],
-    "name": "PatientNotFound",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "caller",
-        "type": "address"
-      }
-    ],
-    "name": "UnauthorizedDoctor",
-    "type": "error"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "requestId",
-        "type": "bytes32"
-      }
-    ],
-    "name": "UnexpectedRequestID",
-    "type": "error"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "healthScore",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "tokensEarned",
-        "type": "uint256"
-      }
-    ],
-    "name": "HealthScoreUpdated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      }
-    ],
-    "name": "OwnershipTransferRequested",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "from",
-        "type": "address"
-      },
-      {
-        "indexed": true,
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      }
-    ],
-    "name": "OwnershipTransferred",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "referrer",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "referee",
-        "type": "address"
-      }
-    ],
-    "name": "ReferralRegistered",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "id",
-        "type": "bytes32"
-      }
-    ],
-    "name": "RequestFulfilled",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "doctor",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "tokenId",
-        "type": "uint256"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint256",
-        "name": "timestamp",
-        "type": "uint256"
-      }
-    ],
-    "name": "RequestInitiated",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "id",
-        "type": "bytes32"
-      }
-    ],
-    "name": "RequestSent",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": true,
-        "internalType": "bytes32",
-        "name": "requestId",
-        "type": "bytes32"
-      },
-      {
-        "indexed": false,
-        "internalType": "bytes",
-        "name": "response",
-        "type": "bytes"
-      },
-      {
-        "indexed": false,
-        "internalType": "bytes",
-        "name": "err",
-        "type": "bytes"
-      }
-    ],
-    "name": "Response",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "patient",
-        "type": "address"
-      }
-    ],
-    "name": "TestsCleared",
-    "type": "event"
-  },
-  {
-    "anonymous": false,
-    "inputs": [
-      {
-        "indexed": false,
-        "internalType": "address",
-        "name": "patient",
-        "type": "address"
-      },
-      {
-        "indexed": false,
-        "internalType": "uint8[]",
-        "name": "selectedTests",
-        "type": "uint8[]"
-      }
-    ],
-    "name": "TestsSelected",
-    "type": "event"
-  },
-  {
-    "inputs": [],
-    "name": "acceptOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "doctor",
-        "type": "address"
-      }
-    ],
-    "name": "authorizeDoctor",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "authorizedDoctors",
-    "outputs": [
-      {
-        "internalType": "bool",
-        "name": "",
-        "type": "bool"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "bytes32",
-        "name": "requestId",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "bytes",
-        "name": "response",
-        "type": "bytes"
-      },
-      {
-        "internalType": "bytes",
-        "name": "err",
-        "type": "bytes"
-      }
-    ],
-    "name": "handleOracleFulfillment",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "healthToken",
-    "outputs": [
-      {
-        "internalType": "contract MediCoin",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "owner",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "patientNFT",
-    "outputs": [
-      {
-        "internalType": "contract PatientNFT",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "name": "patientTests",
-    "outputs": [
-      {
-        "internalType": "uint8",
-        "name": "",
-        "type": "uint8"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "referralReward",
-    "outputs": [
-      {
-        "internalType": "uint256",
-        "name": "",
-        "type": "uint256"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "name": "referrals",
-    "outputs": [
-      {
-        "internalType": "address",
-        "name": "",
-        "type": "address"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "referrer",
-        "type": "address"
-      }
-    ],
-    "name": "registerReferral",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "doctor",
-        "type": "address"
-      }
-    ],
-    "name": "revokeDoctor",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "s_lastError",
-    "outputs": [
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "s_lastRequestId",
-    "outputs": [
-      {
-        "internalType": "bytes32",
-        "name": "",
-        "type": "bytes32"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [],
-    "name": "s_lastResponse",
-    "outputs": [
-      {
-        "internalType": "bytes",
-        "name": "",
-        "type": "bytes"
-      }
-    ],
-    "stateMutability": "view",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "uint8[]",
-        "name": "selectedTests",
-        "type": "uint8[]"
-      }
-    ],
-    "name": "selectTests",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "address",
-        "name": "to",
-        "type": "address"
-      }
-    ],
-    "name": "transferOwnership",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  },
-  {
-    "inputs": [
-      {
-        "internalType": "string",
-        "name": "source",
-        "type": "string"
-      },
-      {
-        "internalType": "bytes",
-        "name": "encryptedSecretsUrls",
-        "type": "bytes"
-      },
-      {
-        "internalType": "uint8",
-        "name": "donHostedSecretsSlotID",
-        "type": "uint8"
-      },
-      {
-        "internalType": "uint64",
-        "name": "donHostedSecretsVersion",
-        "type": "uint64"
-      },
-      {
-        "internalType": "uint64",
-        "name": "subscriptionId",
-        "type": "uint64"
-      },
-      {
-        "internalType": "uint32",
-        "name": "gasLimit",
-        "type": "uint32"
-      },
-      {
-        "internalType": "bytes32",
-        "name": "donID",
-        "type": "bytes32"
-      },
-      {
-        "internalType": "address",
-        "name": "patient",
-        "type": "address"
-      },
-      {
-        "internalType": "uint256",
-        "name": "amountPaid",
-        "type": "uint256"
-      }
-    ],
-    "name": "updatePatientHealthScore",
-    "outputs": [],
-    "stateMutability": "nonpayable",
-    "type": "function"
-  }
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "router",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_patientNFT",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_healthToken",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_healthInsuranceNFT",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_freeHealthKitNFT",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "_freeHealthCheckupNFT",
+				"type": "address"
+			}
+		],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [],
+		"name": "EmptyArgs",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "EmptySecrets",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "EmptySource",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "required",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "available",
+				"type": "uint256"
+			}
+		],
+		"name": "InsufficientBalance",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "referrer",
+				"type": "address"
+			}
+		],
+		"name": "InvalidReferral",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "NoInlineSecrets",
+		"type": "error"
+	},
+	{
+		"inputs": [],
+		"name": "OnlyRouterCanFulfill",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "patient",
+				"type": "address"
+			}
+		],
+		"name": "PatientNotFound",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "value",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256",
+				"name": "length",
+				"type": "uint256"
+			}
+		],
+		"name": "StringsInsufficientHexLength",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "caller",
+				"type": "address"
+			}
+		],
+		"name": "UnauthorizedDoctor",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "requestId",
+				"type": "bytes32"
+			}
+		],
+		"name": "UnexpectedRequestID",
+		"type": "error"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "healthScore",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "tokensEarned",
+				"type": "uint256"
+			}
+		],
+		"name": "HealthScoreUpdated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			}
+		],
+		"name": "OwnershipTransferRequested",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			}
+		],
+		"name": "OwnershipTransferred",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "referrer",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "referee",
+				"type": "address"
+			}
+		],
+		"name": "ReferralRegistered",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "bytes32",
+				"name": "id",
+				"type": "bytes32"
+			}
+		],
+		"name": "RequestFulfilled",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "doctor",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "timestamp",
+				"type": "uint256"
+			}
+		],
+		"name": "RequestInitiated",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "bytes32",
+				"name": "id",
+				"type": "bytes32"
+			}
+		],
+		"name": "RequestSent",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "bytes32",
+				"name": "requestId",
+				"type": "bytes32"
+			},
+			{
+				"indexed": false,
+				"internalType": "bytes",
+				"name": "response",
+				"type": "bytes"
+			},
+			{
+				"indexed": false,
+				"internalType": "bytes",
+				"name": "err",
+				"type": "bytes"
+			}
+		],
+		"name": "Response",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "patient",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "rewardContract",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "tokenId",
+				"type": "uint256"
+			}
+		],
+		"name": "RewardClaimed",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "address",
+				"name": "patient",
+				"type": "address"
+			}
+		],
+		"name": "TestsCleared",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "patient",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint8[]",
+				"name": "selectedTests",
+				"type": "uint8[]"
+			}
+		],
+		"name": "TestsSelected",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "acceptOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "doctor",
+				"type": "address"
+			}
+		],
+		"name": "authorizeDoctor",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "authorizedDoctors",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "rewardContract",
+				"type": "address"
+			}
+		],
+		"name": "claimReward",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "freeHealthCheckupNFT",
+		"outputs": [
+			{
+				"internalType": "contract FreeHealthCheckupNFT",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "freeHealthKitNFT",
+		"outputs": [
+			{
+				"internalType": "contract FreeHealthKitNFT",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bytes32",
+				"name": "requestId",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "bytes",
+				"name": "response",
+				"type": "bytes"
+			},
+			{
+				"internalType": "bytes",
+				"name": "err",
+				"type": "bytes"
+			}
+		],
+		"name": "handleOracleFulfillment",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "healthInsuranceNFT",
+		"outputs": [
+			{
+				"internalType": "contract HealthInsuranceNFT",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "healthToken",
+		"outputs": [
+			{
+				"internalType": "contract MediCoin",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "patientNFT",
+		"outputs": [
+			{
+				"internalType": "contract PatientNFT",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "patientTests",
+		"outputs": [
+			{
+				"internalType": "uint8",
+				"name": "",
+				"type": "uint8"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "referralReward",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "referrals",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "referrer",
+				"type": "address"
+			}
+		],
+		"name": "registerReferral",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "doctor",
+				"type": "address"
+			}
+		],
+		"name": "revokeDoctor",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "rewardThresholds",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "s_lastError",
+		"outputs": [
+			{
+				"internalType": "bytes",
+				"name": "",
+				"type": "bytes"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "s_lastRequestId",
+		"outputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "s_lastResponse",
+		"outputs": [
+			{
+				"internalType": "bytes",
+				"name": "",
+				"type": "bytes"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint8[]",
+				"name": "selectedTests",
+				"type": "uint8[]"
+			}
+		],
+		"name": "selectTests",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "rewardContract",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "threshold",
+				"type": "uint256"
+			}
+		],
+		"name": "setRewardThreshold",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "string",
+				"name": "source",
+				"type": "string"
+			},
+			{
+				"internalType": "bytes",
+				"name": "encryptedSecretsUrls",
+				"type": "bytes"
+			},
+			{
+				"internalType": "uint8",
+				"name": "donHostedSecretsSlotID",
+				"type": "uint8"
+			},
+			{
+				"internalType": "uint64",
+				"name": "donHostedSecretsVersion",
+				"type": "uint64"
+			},
+			{
+				"internalType": "uint64",
+				"name": "subscriptionId",
+				"type": "uint64"
+			},
+			{
+				"internalType": "uint32",
+				"name": "gasLimit",
+				"type": "uint32"
+			},
+			{
+				"internalType": "bytes32",
+				"name": "donID",
+				"type": "bytes32"
+			},
+			{
+				"internalType": "address",
+				"name": "patient",
+				"type": "address"
+			},
+			{
+				"internalType": "uint256",
+				"name": "amountPaid",
+				"type": "uint256"
+			}
+		],
+		"name": "updatePatientHealthScore",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
 ]
