@@ -31,6 +31,14 @@ import photoshop from "./collaboration/photoshop.png";
 import protopie from "./collaboration/protopie.png";
 import raindrop from "./collaboration/raindrop.png";
 import slack from "./collaboration/slack.png";
+import care from"./collaboration/care.png";
+import healthcare from "./collaboration/healthcare.png";
+import infusion from "./collaboration/infusion.png";
+import injection from "./collaboration/injection.png";
+import personalcare from "./collaboration/personal-care.png";
+import pills from "./collaboration/pills.png";
+import prescription from "./collaboration/prescription.png";
+import psychology from "./collaboration/psychology.png";
 
 import notification1 from "./notification/image-1.png";
 import notification2 from "./notification/image-2.png";
@@ -89,6 +97,14 @@ export {
   protopie,
   raindrop,
   slack,
+  care,
+  healthcare,
+  infusion,
+  injection,
+  personalcare,
+  pills,
+  prescription,
+  psychology,
   notification1,
   notification2,
   notification3,
