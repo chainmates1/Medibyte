@@ -91,7 +91,7 @@ const Header = () => {
       }`}
     >
       <div className="flex items-center px-5 lg:px-7.5 xl:px-10 max-lg:py-4">
-        <a className="block w-[12rem] xl:mr-8" href="#hero">
+        <a className="block w-[12rem] xl:mr-8" href="#">
           <h1 className="h1 text-4xl text-color-4">MediByte</h1>
         </a>
 
