@@ -3,7 +3,7 @@ Medibyte
 *Unlock your health potential with Medibyte - where health meets innovation, revolutionise your well-being with Medibyte services* 🩺
 
 
-Medibyte is a project that leverages the power of the Avalanche smart contract platform to reward users with onchain tokens that link to a unique dynamic NFT. The project attempts to promote healthy living choices by rewarding users with Medicoin tokens (transferrable to USDC tokens) according to data held offchain health-related data. 
+Medibyte is a project that leverages the power of the Avalanche smart contract platform to reward users with onchain tokens that link to a unique dynamic NFT. The project attempts to promote healthy living choices by rewarding users with Medicoin tokens (transferable to USDC tokens) according to data held offchain health-related data. 
 
 The project is accessible to users across the globe and ensures a data intensive process like searching and maintaining health records, a very easy task with its friendly user interface. You can see it live here: https://
 
@@ -19,10 +19,13 @@ Medibyte was created to solve the issue of costs associated with medical facilit
 
 Coming from a variety of backgrounds and healthcare systems, the Medibyte Team decided on this project given the ability for health to transcend geographical boundaries and create a sense of community towards a common goal. As a globalised society, we also recognise that healthier options sometimes aren't as accessible as they should be (e.g. in some countries, soft drink is cheaper than water in stores). Our aim is to create a transparent reward system that brings the cost of healthier options, parallel to the cheaper unhealthy options.  
 
-
 **How it works**
 
 The project fetches up-to-date health records from an external API, constructs a dynamic NFT personalised to each individual based on their uploaded health records, and gives tokens to users able to evidence better medical testing relative to the last onchain record. Should a user wish to exchange USDC for Medicoin they are able to do so, making Medicoin a readily tradeable and dynamic token. 
+
+
+![alt text](image-1.png)
+
 
 **Backend**
 
@@ -30,12 +33,23 @@ Found here: https://github.com/TeamMaverick5/Medibyte/tree/main/ipfs-api
 
 The backend infrastructure is built with MongoDB and Node.js, noting that data is decentralised via the IPFS gateway. 
 
+An offchain function was also used to save gas. As outlined above, Medibyte uses an offchain function to:
+1. calculate the patient score; * 
+2. update the corresponding NFT held by a patient;
+3. send an updated score alongside other attributes (e.g. number of Medicoins) to the user; and 
+4. simultaneously: a) return a URI to the Medibytes team to outline the amount of tokens to be issued to the patient and, b) return the URI of patient nft to the smart contract handling the core logic (Health_Contract).   
+
+The above is made possible because once a patient initially registers, the API sets the NFT data which stores the unique URI where NFT data is stored on IPFS. 
+
+**to calculate a patient score the deployed smart contracts are fetching data from the same API and applying our calculation logic on that data.*
 
 **Frontend**
 
 Found here: https://github.com/TeamMaverick5/Medibyte/tree/main/client
 
 The frontend uses React and  Vite to provide a minimal setup to get React working in Vite with HMR and some ESLint rules. Together, these tools provide users with a minimalist and modern interface for frictionless interaction with the backend.
+
+To also ensure seamless use of the Medibytes platform, the Medibytes team has also integrated Chainlink’s Cross-Chain Interoperability Protocol (CCIP) for patients to use other networks. This is made possible by the use of a receiver and sender contracts. Put simply, the receiver contract is deployed on the doctor's network and sender contract is deployed on the patient's network. What this practically means is that patients are able to easily pay for medical tests in USDC from their respective network or better yet, receive rewards directly to their connected wallet.  
 
 **Summary**
 
@@ -54,5 +68,7 @@ But overall, we are incredibly proud of Medibyte due to its potential to bring e
 
 **What we learnt**
 
-At a minimum, we enhanced our ability to ask intelligent questions to the Chainlink dev team and utilised Stackoverflow when running into technical issues during the hackathon. 
+In terms of technical skills, we deepened our understanding of Solidity for writing secure and efficient smart contracts. We also made sure to learn more about Chainlink CCIP. Specifically, we learnt how to use Chainlink’s CCIP to facilitate secure payments and interactions across different blockchain networks. We also learnt about the benefits of decentralised storage by gaining practical experience with the IPFS for decentralised storage, ensuring data integrity and accessibility in a distributed environment.
+
+At a minimum, we enhanced our ability to ask intelligent questions to the Chainlink dev team and utilised Stack Overflow when running into technical issues during the hackathon. We also learnt that communication with team members meant deadlines were readily achievable and a seemingly impossible task became manageable with teamwork.
 
