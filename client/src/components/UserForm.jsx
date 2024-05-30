@@ -1,24 +1,31 @@
-// UserForm.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useUser } from "../UserContext";
+import { ethers } from "ethers";
 
 const UserForm = () => {
-  const { account, contract } = useUser();
+  const { account, contract, provider } = useUser();
   const [showDescriptions, setShowDescriptions] = useState([]);
   const [selectedTests, setSelectedTests] = useState([]);
+  const [chainId, setChainId] = useState(null);
 
   const tests = [
-    { id: 1, name: "Blood Test", description: "A test to check your blood." },
-    { id: 2, name: "X-Ray", description: "An imaging test to view bones." },
-    { id: 3, name: "MRI", description: "A test to get detailed images of organs." },
-    { id: 4, name: "CT Scan", description: "A detailed imaging test." },
-    { id: 5, name: "Urine Test", description: "A test to analyze urine." },
-    { id: 6, name: "Ultrasound", description: "A test using sound waves to create images." },
-    { id: 7, name: "EKG", description: "A test to check heart activity." },
-    { id: 8, name: "Blood Pressure Test", description: "A test to measure blood pressure." },
-    { id: 9, name: "Cholesterol Test", description: "A test to measure cholesterol levels." },
-    { id: 10, name: "Blood Sugar Test", description: "A test to measure blood sugar levels." }
+    { id: 1, name: "Haemoglobin Test", description: "Test Haemoglobin in your blood. Price: 0.5 USD", price: ethers.parseUnits("0.5", 18) },
+    { id: 2, name: "Blood Sugar Test", description: "Test your Blood Sugar . Price: 0.75 USD", price: ethers.parseUnits("0.75", 18) },
+    { id: 3, name: "Blood Uria Test", description: "Test the Uria content in your blood. Price: 1.25 USD", price: ethers.parseUnits("1.25", 18) },
+    { id: 4, name: "Serum Bilirubin Test", description: "Test Serum Bilirubin in your blood. Price: 2.0 USD", price: ethers.parseUnits("2.0", 18) },
+    { id: 5, name: "HDL Cholestrol Test", description: "Test your HDL Cholestrol. Price: 1.75 USD", price: ethers.parseUnits("1.75", 18) },
+    { id: 6, name: "FDL Cholestrol Test", description: "Test your FDL Cholestrol. Price: 2 USD", price: ethers.parseUnits("2", 18) }
   ];
+
+  useEffect(() => {
+    const fetchChainId = async () => {
+      if (provider) {
+        const network = await provider.getNetwork();
+        setChainId(network.chainId);
+      }
+    };
+    fetchChainId();
+  }, [provider]);
 
   const toggleDescription = (id) => {
     if (showDescriptions.includes(id)) {
@@ -38,17 +45,47 @@ const UserForm = () => {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    if (contract) {
-      try {
+    if (!contract) {
+      alert("Smart contract is not loaded.");
+      return;
+    }
+
+    const selectedTestPrices = selectedTests.map(testId => tests.find(test => test.id === testId).price);
+    const totalPrice = selectedTestPrices.reduce((total, price) => total.add(price), ethers.BigNumber.from(0));
+
+    try {
+      const usdcContract = new ethers.Contract(
+        USDC_CONTRACT_ADDRESS, 
+        usdcAbi, 
+        provider.getSigner()
+      );
+
+      if (chainId === DESTINATION_CHAIN_ID) { 
+        const approveTx = await usdcContract.approve(contract.address, totalPrice);
+        await approveTx.wait();
         const tx = await contract.selectTests(selectedTests);
         await tx.wait();
         alert("Tests selected successfully!");
-      } catch (error) {
-        console.error("Error selecting tests:", error);
-        alert("Error selecting tests.");
+      } else {
+        const senderContract = new ethers.Contract(
+          SENDER_CONTRACT_ADDRESS, 
+          senderAbi,
+          provider.getSigner()
+        );
+        const transferTx = await usdcContract.transfer(senderContract.address, totalPrice);
+        await transferTx.wait();
+        const tx = await senderContract.sendMessagePayLINK(
+          DESTINATION_CHAIN_SELECTOR,
+          account,
+          selectedTests,
+          totalPrice
+        );
+        await tx.wait();
+        alert("Tests selected and message sent successfully!");
       }
-    } else {
-      alert("Smart contract is not loaded.");
+    } catch (error) {
+      console.error("Error selecting tests:", error);
+      alert("Error selecting tests.");
     }
   };
 

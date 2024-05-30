@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ethers } from 'ethers';
-import { Navigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import patAbi from '../abis/PatientNFT.json';
 const PatientNFT_ADDRESS = import.meta.env.VITE_PAT_NFT_ADDRESS;
 
@@ -29,24 +29,24 @@ const ProfileCard = () => {
   });
   const [loading, setLoading] = useState(true);
   const [account, setAccount] = useState(null);
+  const navigate = useNavigate(); // Initialize the useNavigate hook
 
   useEffect(() => {
     const fetchNFTData = async () => {
       try {
-        if(window.ethereum){
+        if (window.ethereum) {
           const provider = new ethers.BrowserProvider(window.ethereum);
           const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
           const account = accounts[0];
           setAccount(account);
           const tokenId = await getNFTId(provider, account);
-          // console.log(tokenId);
           if (!tokenId) {
             setLoading(false);
             return;
           }
           const data = await fetchNFTDataFromOpenSea(tokenId);
           setNftData(data);
-        }else{
+        } else {
           alert("MetaMask extension not detected. Please install MetaMask.")
         }
       } catch (error) {
@@ -59,12 +59,7 @@ const ProfileCard = () => {
   }, []);
 
   const RewardLink = () => {
-    Navigate("/Rewards",{
-        state: {
-            PatientNFTAddress: PatientNFT_ADDRESS,
-            NFTId: getNFTId 
-        }
-    })
+    navigate("/Rewards"); // Navigate to /Rewards
   }
 
   const coins = nftData.attributes.find(attr => attr.trait_type === 'Coins') || { value: '-' };
@@ -80,7 +75,7 @@ const ProfileCard = () => {
         <img className="object-cover object-center h-32" src={nftData.image_preview_url} alt={nftData.name} />
       </div>
       <div className="text-center mt-2">
-        <h2 className="font-semibold">{account? `${account.substring(0, 5)}...${account.slice(-3)}` : "0x"}</h2>
+        <h2 className="font-semibold">{account ? `${account.substring(0, 5)}...${account.slice(-3)}` : "0x"}</h2>
       </div>
       <ul className="py-4 mt-2 text-gray-700 flex items-center justify-around">
         <li className="flex flex-col items-center justify-around">
@@ -100,7 +95,7 @@ const ProfileCard = () => {
         </li>
       </ul>
       <div className="p-4 border-t mx-8 mt-2">
-        <button className="w-1/2 block mx-auto rounded-full bg-gray-900 hover:shadow-lg font-semibold text-white px-0 py-2" onClick={RewardLink} >Get Rewards</button>
+        <button className="w-1/2 block mx-auto rounded-full bg-gray-900 hover:shadow-lg font-semibold text-white px-0 py-2" onClick={RewardLink}>Get Rewards</button>
       </div>
     </div>
   );
