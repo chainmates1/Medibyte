@@ -1,9 +1,5 @@
-
-if (!secrets.apiKey) {
-    throw Error(
-        "api key not set"
-    );
-}
+// Imports
+const { ethers } = await import('npm:ethers@6.12.1');
 
 // Predefined normal ranges for patient data
 const normalRanges = [
@@ -20,25 +16,21 @@ const normalRanges = [
 
 // Make HTTP request to fetch patient data from external API
 
-const apiUrlPatientData = 'https://ipfs-api-production-4146.up.railway.app/getTestData'; // Replace with actual API URL
+const apiUrlPatientData = 'https://test-api-production-678d.up.railway.app/getTestData'; // Replace with actual API URL
 const patientDataRequest = Functions.makeHttpRequest({
     url: apiUrlPatientData,
-    headers: {
-        "Content-Type": "application/json",
-        "x-api-key": secrets.apiKey,
-    },
 })
 const response = await patientDataRequest;
 if (response.error) {
     console.log("error");
 }
-console.log(response.data.data);
+const dataArray=response.data.data;
 
 // Calculate deviation for each parameter and find average deviation
 let totalDeviation = 0;
 
-for (let i = 0; i < data.length; i++) {
-    const parameter = data[i];
+for (let i = 0; i < dataArray.length; i++) {
+    const parameter = dataArray[i];
     const normalRange = normalRanges[i];
     const mean = (normalRange.min + normalRange.max) / 2;
 
@@ -57,7 +49,7 @@ for (let i = 0; i < data.length; i++) {
     totalDeviation += deviation;
 }
 
-const averageDeviation = totalDeviation / data.length;
+const averageDeviation = totalDeviation / dataArray.length;
 
 // Calculate patient score
 const b = 100 - averageDeviation;
@@ -65,7 +57,9 @@ const patientScore = Math.round(b);
 
 
 let additionalTokens = 0;
-const tokensForScore = (score / 10) * parseInt(arg[2]);
+const tokensForScore = Math.round(( patientScore / 10) * parseInt(args[2]));
+
+console.log(tokensForScore);
 
 if (args[0] != "") {
     const apiurlPreviousScore = args[0];
@@ -75,13 +69,16 @@ if (args[0] != "") {
     const response2 = await previousScoreRequest;
     console.log(response2.data.attribute[0].value);
 
-    const previousScore = response2.data.attribute[0];
-    additionalTokens = ((patientScore - previousScore) / 10) * parseInt(arg[2]);
+    const previousScore = response2.data.attribute[0].value;
+    additionalTokens = Math.round(((patientScore - previousScore) / 10) * parseInt(args[2]));
+    // console.log(additionalTokens);
+    
 }
 
-const totalTokens = additionalTokens + tokensForScore + parseInt(arg[3]);
-const tokensToProvide = additionalTokens + tokensForScore;
+const totalTokens = additionalTokens + tokensForScore + parseInt(args[3]);
 
+const tokensToProvide = additionalTokens + tokensForScore;
+console.log(tokensToProvide);
 let imgurl = "";
 
 if (patientScore > 30 && patientScore < 70) {
@@ -94,9 +91,9 @@ else imgurl = "";
 
 
 const patientData = {
-    description: "Patient NFT ", // Description provided as argument
+    description: "abcd", // Description provided as argument
     image: imgurl, // Image URL provided as argument
-    name: "name ", // Name provided as argument
+    name: "PatientNFT", // Name provided as argument
     attribute: [
         {
             trait_type: "Score",
@@ -113,7 +110,7 @@ const patientData = {
     ]
 };
 
-const apiurlPatientNft = 'https://ipfs-api-production-4146.up.railway.app/setNftData'; // Replace with the actual API URL
+const apiurlPatientNft = 'https://test-api-production-678d.up.railway.app/setNftData'; // Replace with the actual API URL
 console.log("HTTP POST Request to", apiurlPatientNft);
 
 const patientRequest = Functions.makeHttpRequest({
@@ -136,23 +133,25 @@ if (patientResponse.error) {
     throw Error("Request failed");
 }
 
+console.log(JSON.stringify(patientResponse));
 const responseData = patientResponse.data;
 
 if (!responseData || !responseData.uri) {
     throw Error("Invalid response data");
 }
 
-console.log("patient response", responseData);
+
 
 // Extract the URI from the response
 const uri = responseData.uri;
+console.log(uri);
 
 // ABI encoding
-const encoded = ethers.AbiCoder.defaultAbiCoder().encode(
+const encoded = abiCoder.encode(
     ["uint256", "uint256", "string"],
     [patientScore, tokensToProvide, uri]
 );
 
 // return the encoded data as Uint8Array
 return ethers.getBytes(encoded);
-// return Functions.encodeUint256(20);
+// return Functions.encodeUint256(patientScore);
