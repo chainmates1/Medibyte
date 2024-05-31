@@ -43,7 +43,7 @@ export const navigation = [
   {
     id: "0",
     title: "About Us",
-    url: "#About Us",
+    url: "#",
   },
   {
     id: "1",
@@ -52,14 +52,8 @@ export const navigation = [
   },
   {
     id: "2",
-    title: "Benefits",
-    url: "#Benefits",
-  },
-  {
-    id: "3",
-    title: "New account",
-    url: "#signup",
-    onlyMobile: true,
+    title: "Collaboration",
+    url: "#collaboration",
   },
 ];
 
@@ -148,16 +142,16 @@ export const collabApps = [
 export const benefits = [
   {
     id: "0",
-    title: "Ask anything",
-    text: "Lets users quickly find answers to their questions without having to search through multiple sources.",
+    title: "Incentivize Health Improvements",
+    text: "Users receive rewards and NFTs for making positive health choices and improving their well-being.",
     backgroundUrl: "./src/assets/benefits/card-1.svg",
     iconUrl: benefitIcon1,
     imageUrl: backgroundimg,
   },
   {
     id: "1",
-    title: "Improve everyday",
-    text: "The app uses natural language processing to understand user queries and provide accurate and relevant responses.",
+    title: "Book Health Services",
+    text: "Easily book appointments with doctors and healthcare providers, earning incentives for each booking.",
     backgroundUrl: "./src/assets/benefits/card-2.svg",
     iconUrl: benefitIcon2,
     imageUrl: backgroundimg,
@@ -165,16 +159,16 @@ export const benefits = [
   },
   {
     id: "2",
-    title: "Connect everywhere",
-    text: "Connect with the AI chatbot from anywhere, on any device, making it more accessible and convenient.",
+    title: "Access from Anywhere",
+    text: "Access the healthcare DApp from any device, ensuring convenience and flexibility in managing health.",
     backgroundUrl: "./src/assets/benefits/card-3.svg",
     iconUrl: benefitIcon3,
     imageUrl: backgroundimg,
   },
   {
     id: "3",
-    title: "Fast responding",
-    text: "Lets users quickly find answers to their questions without having to search through multiple sources.",
+    title: "Earn Rewards",
+    text: "Earn rewards and NFTs for engaging in healthy activities and achieving health milestones.",
     backgroundUrl: "./src/assets/benefits/card-4.svg",
     iconUrl: benefitIcon4,
     imageUrl: backgroundimg,
@@ -182,45 +176,46 @@ export const benefits = [
   },
   {
     id: "4",
-    title: "Ask anything",
-    text: "Lets users quickly find answers to their questions without having to search through multiple sources.",
+    title: "Improve Lifestyle",
+    text: "Receive guidance and support to improve your lifestyle, with incentives for each positive change.",
     backgroundUrl: "./src/assets/benefits/card-5.svg",
     iconUrl: benefitIcon1,
     imageUrl: backgroundimg,
   },
   {
     id: "5",
-    title: "Improve everyday",
-    text: "The app uses natural language processing to understand user queries and provide accurate and relevant responses.",
+    title: "Track Health Progress",
+    text: "Use the DApp to track health improvements and earn rewards for reaching health goals.",
     backgroundUrl: "./src/assets/benefits/card-6.svg",
     iconUrl: benefitIcon2,
     imageUrl: backgroundimg,
   },
+
   {
     id: "6",
     title: "Intuitive UI/UX",
     text: "Enjoy a user-friendly interface designed to make navigating your health journey simple and engaging.",
-    backgroundUrl: "./src/assets/benefits/card-7.svg",
+    backgroundUrl: "./src/assets/benefits/card-6.svg",
     iconUrl: benefitIcon4,
     imageUrl: backgroundimg,
-},
-{
+  },
+  {
     id: "7",
     title: "Seamless Transitions",
     text: "Experience smooth transitions between features, ensuring a seamless and enjoyable user experience.",
-    backgroundUrl: "./src/assets/benefits/card-8.svg",
+    backgroundUrl: "./src/assets/benefits/card-6.svg",
     iconUrl: benefitIcon1,
     imageUrl: backgroundimg,
     light: true,
-},
-{
+  },
+  {
     id: "8",
     title: "Easy Wallet Connection",
     text: "Effortlessly connect your digital wallet to manage and redeem health tokens and NFTs with ease.",
-    backgroundUrl: "./src/assets/benefits/card-9.svg",
+    backgroundUrl: "./src/assets/benefits/card-6.svg",
     iconUrl: benefitIcon2,
     imageUrl: backgroundimg,
-}
+  }
 
 ];
 
