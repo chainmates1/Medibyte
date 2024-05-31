@@ -1,13 +1,19 @@
+import { useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { connectWallet } from '../utils/walletUtils'; // Import the utility function
+import { useUser } from '../UserContext'; // Import the user context
 import { portrait } from "../assets";
 import Section from "./Section";
 import { BackgroundCircles, BottomLine, Gradient } from "./design/Hero";
 // import { heroIcons } from "..constants";
 // import { ScrollParallax } from "react-just-parallax";
-import { useRef } from "react";
 import Message from "./Message";
 
 const Hero = () => {
   const parallaxRef = useRef(null);
+  const navigate = useNavigate();
+  const { setAccount } = useUser(); // Get the setAccount function from context
+  const [, setIsConnected] = useState(false); // Local state to manage connection status
 
   return (
     <Section
@@ -36,7 +42,10 @@ const Hero = () => {
             Innovation, Revolutionize Your Well-being with Medibyte services
             <span className="text-2xl ml-1">🩺</span>
           </p>
-          <a href="#_" className="relative inline-block text-lg group mt-4">
+          <button
+            onClick={() => connectWallet(setAccount, setIsConnected, navigate)}
+            className="relative inline-block text-lg group mt-4"
+          >
             <span className="relative z-10 block px-5 py-3 overflow-hidden font-medium leading-tight text-gray-800 transition-colors duration-300 ease-out border-2 border-gray-900 rounded-lg group-hover:text-white">
               <span className="absolute inset-0 w-full h-full px-5 py-3 rounded-lg bg-gray-50"></span>
               <span className="absolute left-0 w-48 h-48 -ml-2 transition-all duration-300 origin-top-right -rotate-90 -translate-x-full translate-y-12 bg-gray-900 group-hover:-rotate-180 ease"></span>
@@ -46,7 +55,7 @@ const Hero = () => {
               className="absolute bottom-0 right-0 w-full h-12 -mb-1 -mr-1 transition-all duration-200 ease-linear bg-green-400 rounded-lg group-hover:mb-0 group-hover:mr-0"
               data-rounded="rounded-lg"
             ></span>
-          </a>
+          </button>
         </div>
         <div className="relative max-w-[23rem] mx-auto -mt-5 md:max-w-5xl xl:mb-24">
           <div className="relative z-1 p-0.5 rounded-2xl bg-conic-gradient">
