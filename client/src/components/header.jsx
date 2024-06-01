@@ -6,13 +6,15 @@ import MenuSvg from "../assets/svg/MenuSvg";
 import { HamburgerMenu } from "./design/Header";
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
+import HealthContract from "../abis/Health_Contract.json";
 import { useUser } from "../UserContext";
 
 const Header = () => {
   const pathname = useLocation();
   const [openNavigation, setOpenNavigation] = useState(false);
-  const { account, setAccount} = useUser();
+  const { account, setAccount, contract, setContract } = useUser();
   const [isConnected, setIsConnected] = useState(false);
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   const connectWallet = async () => {
@@ -22,15 +24,19 @@ const Header = () => {
         const account = accounts[0];
         setAccount(account);
         setIsConnected(true);
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const signer = await provider.getSigner();
-        navigate("/user");
+        localStorage.setItem("connectedAccount", account);
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const contractAddress = "0xAA8343EB38f8F09C05b493725adbE10aaA50Ada6";
+        const contract = new ethers.Contract(contractAddress, HealthContract.abi, signer);
+        setContract(contract);
       } else {
-        alert("MetaMask extension not detected. Please install MetaMask.");
+        setError("MetaMask extension not detected. Please install MetaMask.");
       }
     } catch (error) {
-      console.error("Error connecting to MetaMask:", error);
+      
     }
+    navigate("/user");
   };
 
   const toggleNavigation = () => {
@@ -53,34 +59,35 @@ const Header = () => {
   useEffect(() => {
     const checkConnection = async () => {
       try {
-        if (window.ethereum) {
-          const accounts = await window.ethereum.request({ method: "eth_accounts" });
-          if (accounts.length > 0) {
-            const account = accounts[0];
-            setAccount(account);
-            setIsConnected(true);
-            const provider =new ethers.BrowserProvider(window.ethereum);
-            const signer = await provider.getSigner();
-            // console.log(signer.address);
-          } else {
-            setIsConnected(false);
-            setAccount("");
-          }
+        const savedAccount = localStorage.getItem("connectedAccount");
+        if (savedAccount && window.ethereum) {
+          setAccount(savedAccount);
+          setIsConnected(true);
+          const provider = new ethers.providers.Web3Provider(window.ethereum);
+          const signer = provider.getSigner();
+          const contractAddress = "0xAA8343EB38f8F09C05b493725adbE10aaA50Ada6";
+          const contract = new ethers.Contract(contractAddress, HealthContract.abi, signer);
+          setContract(contract);
         } else {
-          console.log("MetaMask not installed");
           setIsConnected(false);
           setAccount("");
         }
       } catch (error) {
-        console.error("Error checking MetaMask connection:", error);
-        setIsConnected(false);
-        setAccount("");
+        
       }
     };
 
     checkConnection();
     window.ethereum.on("accountsChanged", (accounts) => {
-      checkConnection();
+      if (accounts.length === 0) {
+        setAccount("");
+        setIsConnected(false);
+        localStorage.removeItem("connectedAccount");
+      } else {
+        setAccount(accounts[0]);
+        setIsConnected(true);
+        localStorage.setItem("connectedAccount", accounts[0]);
+      }
     });
   }, [setIsConnected, setAccount]);
 
@@ -91,7 +98,7 @@ const Header = () => {
       }`}
     >
       <div className="flex items-center px-5 lg:px-7.5 xl:px-10 max-lg:py-4">
-        <a className="block w-[12rem] xl:mr-8" href="#">
+        <a className="block w-[12rem] xl:mr-8" href="#hero">
           <h1 className="h1 text-4xl text-color-4">MediByte</h1>
         </a>
 
@@ -120,15 +127,8 @@ const Header = () => {
           <HamburgerMenu />
         </nav>
 
-        {/* <a
-          href="#signup"
-          className="button hidden mr-8 text-n-1/50 transition-colors hover:text-n-1 lg:block"
-        >
-          New account
-        </a> */}
-
         <button
-          onClick={isConnected ? null : connectWallet}
+          onClick={ connectWallet}
           className={`relative inline-block text-lg group lg:inline-block hidden ${
             isConnected ? "cursor-default" : ""
           }`}
@@ -160,6 +160,11 @@ const Header = () => {
           <MenuSvg openNavigation={openNavigation} />
         </Button>
       </div>
+      {error && (
+        <div className="absolute top-0 left-0 w-full bg-red-500 text-white text-center p-2">
+          {error}
+        </div>
+      )}
     </div>
   );
 };
