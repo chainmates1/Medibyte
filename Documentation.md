@@ -21,39 +21,7 @@ Coming from a variety of backgrounds and healthcare systems, the Medibyte Team d
 
 **How it works**
 
-The project utilizes blockchain technology to incentivize patients based on their health records and improvements in their health. It involves a comprehensive system of dynamic NFTs and a native token, MediCoin. Here’s how it functions:
-
-1.Patient Health Data and Test Selection:
-
-->Patients can select health tests they wish to undergo using the selectTests function. This information is stored on-chain.
-->Authorized doctors are notified via the TestsSelected event when a patient selects tests, allowing them to prepare and update the patient’s health data accordingly.
-
-2.Dynamic NFTs:
-
-->Each patient is associated with a unique PatientNFT, which dynamically updates based on their health records.
-->When a doctor updates a patient’s health score using the updatePatientHealthScore function, the system fetches the health records and updates the NFT’s metadata.
-->If the patient does not already have an NFT, one is minted for them upon their first health record update.
-
-3.Incentives and Rewards:
-
-->Patients earn MediCoin tokens as rewards for maintaining or improving their health scores.
-->Patients can claim various reward NFTs (e.g., HealthInsuranceNFT, FreeHealthKitNFT, FreeHealthCheckupNFT) by meeting predefined MediCoin balance thresholds.
-->Referral bonuses in MediCoin are provided to patients who refer new users to the system, promoting growth and engagement.
-
-4.Doctor Authorization and Data Integrity:
-
-Only authorized doctors can update patient health scores, ensuring the integrity and trustworthiness of the data.
-The contract owner can manage the list of authorized doctors.
-
-5.Secure Data Handling:
-
-->The contract uses Chainlink’s FunctionsClient to securely fetch and handle external health data.
-->The dynamic nature of the NFTs reflects real-time updates based on the patient’s health data.
-
-6.Event-driven Architecture:
-
-->Events such as TestsSelected, HealthScoreUpdated, and RewardClaimed provide transparency and allow external systems to respond to changes within the contract.
-->By integrating dynamic NFTs, real-time data updates, and token-based incentives, the project aims to motivate patients to improve their health and engage with their health records in a meaningful way on the blockchain.
+The project fetches up-to-date health records from an external API, constructs a dynamic NFT personalised to each individual based on their uploaded health records, and gives tokens to users able to evidence better medical testing relative to the last onchain record. Should a user wish to exchange USDC for Medicoin they are able to do so, making Medicoin a readily tradeable and dynamic token. 
 
 
 ![alt text](image-1.png)
@@ -66,12 +34,10 @@ Found here: https://github.com/TeamMaverick5/Medibyte/tree/main/ipfs-api
 The backend infrastructure is built with MongoDB and Node.js, noting that data is decentralised via the IPFS gateway. 
 
 An offchain function was also used to save gas. As outlined above, Medibyte uses an offchain function to:
-1. calculate the patient score; 
+1. calculate the patient score; * 
 2. update the corresponding NFT held by a patient;
-3. send an updated score alongside other attributes (e.g. number of Medicoins) to the user; 
-4. simultaneously:
-   a) return a URI to the Medibytes team to outline the amount of tokens to be issued to the patient
-   b) return the URI of patient nft to the smart contract handling the core logic (Health_Contract).   
+3. send an updated score alongside other attributes (e.g. number of Medicoins) to the user; and 
+4. simultaneously: a) return a URI to the Medibytes team to outline the amount of tokens to be issued to the patient and, b) return the URI of patient nft to the smart contract handling the core logic (Health_Contract).   
 
 The above is made possible because once a patient initially registers, the API sets the NFT data which stores the unique URI where NFT data is stored on IPFS. 
 
