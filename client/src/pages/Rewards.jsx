@@ -161,7 +161,7 @@ const Rewards = () => {
                         <h2 className="h2 mb-4 text-center text-stroke-1">{key.replace(/NFT$/, "")}</h2>
                         <p className="body-1 text-center text-stroke-1">Available: {available}</p>
                         <p className="body-1 text-center text-stroke-1">Price: {price} Health Tokens</p>
-                        <button className="button bg-color-1 text-n-1 mt-5 py-2 px-4 rounded w-full">Claim</button>
+                        <button className="button bg-color-1 text-n-1 mt-5 py-2 px-4 rounded w-full" onClick={claimReward}>Claim</button>
                     </div>
                 ))}
             </div>
