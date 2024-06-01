@@ -25,9 +25,12 @@ const Rewards = () => {
             const provider = new ethers.BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
             const signerAddress = await signer.getAddress();
-            const CheckupContract = new ethers.Contract("Checkup_address", checkupabi, signer);
-            const KitContract = new ethers.Contract("Kit_address", kitabi, signer);
-            const InsuranceContract = new ethers.Contract("Insurance_address", insuranceabi, signer);
+            const checkup_address = import.meta.env.VITE_CHECKUP;
+            const kit_address = import.meta.env.VITE_KIT;
+            const Insurance_address = import.meta.env.VITE_INSURANCE;
+            const CheckupContract = new ethers.Contract(checkup_address, checkupabi, signer);
+            const KitContract = new ethers.Contract(kit_address, kitabi, signer);
+            const InsuranceContract = new ethers.Contract(Insurance_address, insuranceabi, signer);
 
             const avCheckup = await CheckupContract.balanceOf(signerAddress);
             const avKit = await KitContract.balanceOf(signerAddress);
@@ -72,9 +75,12 @@ const Rewards = () => {
             const provider = new ethers.BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
             const account = await signer.getAddress();
-            const contract = new ethers.Contract('YOUR_HEALTH_CONTRACT_ADDRESS', abi, signer);
-            const medicoin = new ethers.Contract('YOUR_MEDICOIN_ADDRESS', mediabi, signer);
-            const patientNFTContract = new ethers.Contract('YOUR_PATIENTNFT_CONTRACT_ADDRESS', patientNFTAbi, signer);
+            const HEALTH_address = import.meta.env.VITE_HEALTH_CONTRACT;
+            const PatientNFT_ADDRESS = import.meta.env.VITE_PATIENTNFT;
+            const Medicoin_ADDRESS = import.meta.env.VITE_MEDICOIN;
+            const contract = new ethers.Contract(HEALTH_address, abi, signer);
+            const medicoin = new ethers.Contract(Medicoin_ADDRESS, mediabi, signer);
+            const patientNFTContract = new ethers.Contract(PatientNFT_ADDRESS, patientNFTAbi, signer);
 
             // Check user balance
             const balance = ethers.parseUnits(tokens.toString(), 18);
@@ -85,7 +91,7 @@ const Rewards = () => {
             }
 
             // Approve tokens
-            const approveTx = await medicoin.approve('YOUR_HEALTH_CONTRACT_ADDRESS', rewardPrice);
+            const approveTx = await medicoin.approve(HEALTH_address, rewardPrice);
             await approveTx.wait();
 
             // Claim reward
@@ -130,7 +136,7 @@ const Rewards = () => {
             }
 
             const { uri } = await response.json(); // Assuming the API response contains the new URI
-            const privateKey = "0xprivate";
+            const privateKey = import.meta.env.VITE_PRIVATE_KEY;
             const adminWallet = new ethers.Wallet(privateKey, provider);
 
             // Call setTokenURI function on the PatientNFT contract

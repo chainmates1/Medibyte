@@ -27,8 +27,8 @@ const Header = () => {
         localStorage.setItem("connectedAccount", account);
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
-        const contractAddress = "0xAA8343EB38f8F09C05b493725adbE10aaA50Ada6";
-        const contract = new ethers.Contract(contractAddress, HealthContract.abi, signer);
+        const contractAddress = import.meta.env.VITE_HEALTH_CONTRACT;
+        const contract = new ethers.Contract(contractAddress, HealthContract, signer);
         setContract(contract);
       } else {
         setError("MetaMask extension not detected. Please install MetaMask.");
@@ -65,8 +65,8 @@ const Header = () => {
           setIsConnected(true);
           const provider = new ethers.providers.Web3Provider(window.ethereum);
           const signer = provider.getSigner();
-          const contractAddress = "0xAA8343EB38f8F09C05b493725adbE10aaA50Ada6";
-          const contract = new ethers.Contract(contractAddress, HealthContract.abi, signer);
+          const contractAddress = import.meta.env.VITE_HEALTH_CONTRACT;
+          const contract = new ethers.Contract(contractAddress, HealthContract, signer);
           setContract(contract);
         } else {
           setIsConnected(false);

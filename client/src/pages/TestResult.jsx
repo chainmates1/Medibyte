@@ -39,7 +39,7 @@ const TestResult = () => {
       // Interacting with the smart contract
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = provider.getSigner();
-      const contractAddress = '0xYOUR_CONTRACT_ADDRESS';
+      const contractAddress = import.meta.env.VITE_HEALTH_CONTRACT;
       const contractABI = abi;
       const contract = new ethers.Contract(contractAddress, contractABI, signer);
 

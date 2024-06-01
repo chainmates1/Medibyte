@@ -8,7 +8,7 @@ const PatientsSheet = () => {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const navigate = useNavigate();
   let contract; 
-  const authorizedAddress = '0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266';
+  const authorizedAddress = import.meta.env.VITE_DOCTOR;
 
   useEffect(() => {
     const checkAuthorization = async () => {
@@ -38,7 +38,7 @@ const PatientsSheet = () => {
     const fetchPatients = async () => {
       try {
         const provider = new ethers.BrowserProvider(window.ethereum);
-        const contractAddress = import.meta.env.VITE_CONTRACT_ADDRESS;
+        const contractAddress = import.meta.env.VITE_HEALTH_CONTRACT;
         const contractABI = abi;
         contract = new ethers.Contract(contractAddress, contractABI, provider);
 

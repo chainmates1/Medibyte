@@ -52,7 +52,7 @@ const UserForm = () => {
 
     const selectedTestPrices = selectedTests.map(testId => tests.find(test => test.id === testId).price);
     const totalPrice = selectedTestPrices.reduce((total, price) => total.add(price), ethers.BigNumber.from(0));
-
+    const USDC_CONTRACT_ADDRESS = import.meta.env.VITE_USDC;
     try {
       const usdcContract = new ethers.Contract(
         USDC_CONTRACT_ADDRESS, 
