@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { useUser } from "../UserContext";
 import { ethers } from "ethers";
+import usdcAbi from "../abis/USDCABI.json"
+import abi from "../abis/Health_Contract.json"
 
 const UserForm = () => {
-  const { account, contract, provider } = useUser();
+  const provider = new ethers.BrowserProvider(window.ethereum);
   const [showDescriptions, setShowDescriptions] = useState([]);
   const [selectedTests, setSelectedTests] = useState([]);
   const [chainId, setChainId] = useState(null);
-
+  
   const tests = [
     { id: 1, name: "Haemoglobin Test", description: "Test Haemoglobin in your blood. Price: 0.5 USD", price: ethers.parseUnits("0.5", 18) },
     { id: 2, name: "Blood Sugar Test", description: "Test your Blood Sugar . Price: 0.75 USD", price: ethers.parseUnits("0.75", 18) },
@@ -44,12 +46,17 @@ const UserForm = () => {
   };
 
   const handleSubmit = async (event) => {
+    const provider = new ethers.BrowserProvider(window.ethereum);
+    const signer = await provider.getSigner();
+    const contractAddress = import.meta.env.VITE_HEALTH_CONTRACT;
+    const contractABI = abi;
+    const contract = new ethers.Contract(contractAddress, contractABI, signer);
     event.preventDefault();
     if (!contract) {
       alert("Smart contract is not loaded.");
       return;
     }
-
+    const DESTINATION_CHAIN_ID = "14767482510784806043";
     const selectedTestPrices = selectedTests.map(testId => tests.find(test => test.id === testId).price);
     const totalPrice = selectedTestPrices.reduce((total, price) => total.add(price), ethers.BigNumber.from(0));
     const USDC_CONTRACT_ADDRESS = import.meta.env.VITE_USDC;
@@ -67,12 +74,18 @@ const UserForm = () => {
         await tx.wait();
         alert("Tests selected successfully!");
       } else {
+        const USDC_CONTRACT_ADDRESS1 = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
+        const usdcContract1 = new ethers.Contract(
+          USDC_CONTRACT_ADDRESS1, 
+          usdcAbi, 
+          provider.getSigner()
+        );
         const senderContract = new ethers.Contract(
           SENDER_CONTRACT_ADDRESS, 
           senderAbi,
           provider.getSigner()
         );
-        const transferTx = await usdcContract.transfer(senderContract.address, totalPrice);
+        const transferTx = await usdcContract1.transfer(senderContract.address, totalPrice);
         await transferTx.wait();
         const tx = await senderContract.sendMessagePayLINK(
           DESTINATION_CHAIN_SELECTOR,

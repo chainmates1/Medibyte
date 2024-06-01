@@ -7,9 +7,10 @@ const PatientNFT_ADDRESS = import.meta.env.VITE_PATIENTNFT;
 
 const getNFTId = async (provider, walletAddress) => {
   const contract = new ethers.Contract(PatientNFT_ADDRESS, patAbi, provider);
-  console.log(PatientNFT_ADDRESS);
-  const tid = await contract._patientToTokenId(walletAddress);
-  return Number(tid);
+  // const tid = await contract.getTokenIdByPatient(walletAddress);
+  const result = await contract.getTokenIdByPatient(walletAddress);
+  console.log(walletAddress);
+  return Number(result);
 };
 
 const fetchNFTDataFromOpenSea = async (tokenId) => {
