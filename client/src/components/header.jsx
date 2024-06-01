@@ -1,4 +1,3 @@
-// Header.jsx
 import { useLocation, useNavigate } from "react-router-dom";
 import { disablePageScroll, enablePageScroll } from "scroll-lock";
 import { navigation } from "../constants/data";
@@ -6,15 +5,33 @@ import Button from "./Button";
 import MenuSvg from "../assets/svg/MenuSvg";
 import { HamburgerMenu } from "./design/Header";
 import { useState, useEffect } from "react";
+import { ethers } from "ethers";
 import { useUser } from "../UserContext";
-import { connectWallet } from "../utils/walletUtils"; // Import the utility function
 
 const Header = () => {
   const pathname = useLocation();
   const [openNavigation, setOpenNavigation] = useState(false);
-  const { account, setAccount } = useUser();
+  const { account, setAccount} = useUser();
   const [isConnected, setIsConnected] = useState(false);
   const navigate = useNavigate();
+
+  const connectWallet = async () => {
+    try {
+      if (window.ethereum) {
+        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+        const account = accounts[0];
+        setAccount(account);
+        setIsConnected(true);
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = await provider.getSigner();
+        navigate("/user");
+      } else {
+        alert("MetaMask extension not detected. Please install MetaMask.");
+      }
+    } catch (error) {
+      console.error("Error connecting to MetaMask:", error);
+    }
+  };
 
   const toggleNavigation = () => {
     if (openNavigation) {
@@ -28,6 +45,7 @@ const Header = () => {
 
   const handleClick = () => {
     if (!openNavigation) return;
+
     enablePageScroll();
     setOpenNavigation(false);
   };
@@ -41,9 +59,9 @@ const Header = () => {
             const account = accounts[0];
             setAccount(account);
             setIsConnected(true);
-            // eslint-disable-next-line no-undef
-            const provider = new ethers.BrowserProvider(window.ethereum);
+            const provider =new ethers.BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
+            // console.log(signer.address);
           } else {
             setIsConnected(false);
             setAccount("");
@@ -78,7 +96,9 @@ const Header = () => {
         </a>
 
         <nav
-          className={`${openNavigation ? "flex" : "hidden"} fixed top-[5rem] left-0 right-0 bottom-0 bg-n-8 lg:static lg:flex lg:mx-auto lg:bg-transparent`}
+          className={`${
+            openNavigation ? "flex" : "hidden"
+          } fixed top-[5rem] left-0 right-0 bottom-0 bg-n-8 lg:static lg:flex lg:mx-auto lg:bg-transparent`}
         >
           <div className="relative z-2 flex flex-col items-center justify-center m-auto lg:flex-row">
             {navigation.map((item) => (
@@ -100,9 +120,18 @@ const Header = () => {
           <HamburgerMenu />
         </nav>
 
+        {/* <a
+          href="#signup"
+          className="button hidden mr-8 text-n-1/50 transition-colors hover:text-n-1 lg:block"
+        >
+          New account
+        </a> */}
+
         <button
-          onClick={isConnected ? null : () => connectWallet(setAccount, setIsConnected, navigate)}
-          className={`relative inline-block text-lg group lg:inline-block hidden ${isConnected ? "cursor-default" : ""}`}
+          onClick={isConnected ? null : connectWallet}
+          className={`relative inline-block text-lg group lg:inline-block hidden ${
+            isConnected ? "cursor-default" : ""
+          }`}
         >
           {isConnected ? (
             <span className="relative z-10 block px-5 py-3 overflow-hidden font-medium leading-tight text-green-500 border-2 border-green-500 rounded-lg">

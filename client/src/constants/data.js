@@ -23,6 +23,9 @@ import {
   // framer,
   homeSmile,
   instagram,
+  notification2,
+  notification3,
+  notification4,
   // notion,
   // photoshop,
   plusSquare,
@@ -56,7 +59,7 @@ export const navigation = [
 
 export const heroIcons = [homeSmile, file02, searchMd, plusSquare];
 
-// export const notificationImages = [notification4, notification3, notification2];
+export const notificationImages = [notification4, notification3, notification2];
 
 export const collabText =
   "With smart automation and top-notch security, MediByte is the perfect solution for incentivizing patients to improve their health. ";
