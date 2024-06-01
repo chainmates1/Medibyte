@@ -116,7 +116,7 @@ contract Health_Contract is IHealth_Contract, FunctionsClient, ConfirmedOwner, I
         require(selectedTests.length <= 6, "Too many tests selected");
         i_usdcToken.transferFrom(msg.sender, address(this), _amount);
         uint8[6] storage tests = patientTests[_patient];
-        for (uint8 i = 0; i < 10; i++) {
+        for (uint8 i = 0; i < 6; i++) {
             tests[i] = 0; // Reset all tests
         }
         for (uint8 i = 0; i < selectedTests.length; i++) {
@@ -254,7 +254,13 @@ contract Health_Contract is IHealth_Contract, FunctionsClient, ConfirmedOwner, I
             patientNFT.setTokenURI(tokenId, newUri);
         }
 
+        //Transfer healthTokens to Patient Address
         healthToken.mint(patient, tokensEarned);
+
+        //Send the USDC tokens to Doctor(Owner) 
+        uint256 USDBalance=i_usdcToken.balanceOf(address(this));
+        i_usdcToken.transfer(owner(), USDBalance);
+
         delete patientTests[patient];
         emit UpkeepPerformed(requestId,response,err);
         emit TestsCleared(patient);
