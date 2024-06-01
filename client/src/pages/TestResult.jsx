@@ -9,6 +9,7 @@ const TestResult = () => {
   const location = useLocation();
   const { selectedTests } = location.state || {};
   const [testResults, setTestResults] = useState(Array(10).fill(0));
+  const testValues = [0.5, 0.75, 1.25, 2.0, 1.75, 2.0]; // Array of test values
 
   const handleChange = (index, value) => {
     const newResults = [...testResults];
@@ -23,6 +24,9 @@ const TestResult = () => {
       // Sending test results to the API
       await axios.post('/setTestData', { data: testResults });
 
+      // Calculate amountPaid based on selected tests
+      const amountPaid = selectedTests.reduce((sum, testIndex) => sum + testValues[testIndex], 0);
+
       // Dummy parameters for the contract function call
       const source = "dummy source";
       const encryptedSecretsUrls = ethers.utils.randomBytes(32); // Dummy encrypted secrets
@@ -31,12 +35,11 @@ const TestResult = () => {
       const subscriptionId = 0;
       const gasLimit = 300000;
       const donID = ethers.constants.HashZero; // Dummy DON ID
-      const amountPaid = 0;
 
       // Interacting with the smart contract
       const provider = new ethers.BrowserProvider(window.ethereum);
       const signer = provider.getSigner();
-      const contractAddress = '0x';
+      const contractAddress = '0xYOUR_CONTRACT_ADDRESS';
       const contractABI = abi;
       const contract = new ethers.Contract(contractAddress, contractABI, signer);
 
@@ -49,7 +52,7 @@ const TestResult = () => {
         gasLimit,
         donID,
         address,
-        amountPaid
+        ethers.utils.parseUnits(amountPaid.toString(), 18) // Ensure the amount is in the correct unit
       );
 
       alert('Test results submitted successfully and contract function called.');
