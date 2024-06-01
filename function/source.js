@@ -1,45 +1,39 @@
-// Imports
-const { ethers } = await import('npm:ethers@6.12.1');
-
-// Predefined normal ranges for patient data
-const normalRanges = [
-    { min: 70, max: 100 }, // Range for blood pressure
-    { min: 60, max: 100 }, // Range for heart rate
-    { min: 12, max: 20 }, // Range for respiratory rate
-
-];
-
-// arg[0]=uri of patient nft
-// arg[1]=address of patient
-// arg[2]=amount paid
-// arg[3]=number of tokens for this address
-
-// Make HTTP request to fetch patient data from external API
-
-const apiUrlPatientData = 'https://test-api-production-678d.up.railway.app/getTestData'; // Replace with actual API URL
-const patientDataRequest = Functions.makeHttpRequest({
-    url: apiUrlPatientData,
-})
-const response = await patientDataRequest;
-if (response.error) {
-    console.log("error");
+const ethers = await import('npm:ethers@6.10.0');
+const apiUrlPatientData = 'https://test-api-production-678d.up.railway.app/getTestData';
+const apiResponse = await Functions.makeHttpRequest({
+    url: apiUrlPatientData
+});
+if (apiResponse.error) {
+    throw Error('Request failed');
 }
-const dataArray=response.data.data;
+var { data } = apiResponse;
+const dataArray = data.data;
 
-// Calculate deviation for each parameter and find average deviation
+const apiUrlRangeData = 'https://gateway.pinata.cloud/ipfs/bafkreiduvnqgr55z53urzp5gahqm7i2iz4yov3zkwacdxy3k4ea64od4iy';
+
+const apiResponseR = await Functions.makeHttpRequest({
+    url: apiUrlRangeData
+});
+if (apiResponseR.error) {
+    throw Error('Request failed');
+}
+var { data } = apiResponseR;
+const dataRangeArray = data.data;
+
 let totalDeviation = 0;
 
 for (let i = 0; i < dataArray.length; i++) {
+    if(dataArray[i] == 0)
+        continue;
     const parameter = dataArray[i];
-    const normalRange = normalRanges[i];
+    const normalRange = dataRangeArray[i];
     const mean = (normalRange.min + normalRange.max) / 2;
 
     let deviation;
     if (parameter >= normalRange.min && parameter <= normalRange.max) {
-        deviation = 0; // No deviation if parameter lies within the normal range
+        deviation = 0;
     }
     else {
-        // Calculate deviation from the nearest value between min and max
         if (Math.abs(parameter - normalRange.min) < Math.abs(parameter - normalRange.max)) {
             deviation = Math.abs((parameter - normalRange.min) / mean) * 100;
         } else {
@@ -51,107 +45,70 @@ for (let i = 0; i < dataArray.length; i++) {
 
 const averageDeviation = totalDeviation / dataArray.length;
 
-// Calculate patient score
 const b = 100 - averageDeviation;
 const patientScore = Math.round(b);
 
-
 let additionalTokens = 0;
-const tokensForScore = Math.round(( patientScore / 10) * parseInt(args[2]));
+const tokensForScore = Math.round((patientScore / 10) * parseInt(args[2]));
 
-console.log(tokensForScore);
-
-if (args[0] != "") {
-    const apiurlPreviousScore = args[0];
-    const previousScoreRequest = Functions.makeHttpRequest({
-        url: args[0],
-    })
-    const response2 = await previousScoreRequest;
-    console.log(response2.data.attribute[0].value);
-
-    const previousScore = response2.data.attribute[0].value;
+if(args[0] != ''){
+    const apiUrlPatientData2 = args[0];
+    const apiResponse2 = await Functions.makeHttpRequest({
+        url: apiUrlPatientData2
+    });
+    if (apiResponse2.error) {
+        throw Error('Request failed');
+    }
+    var { data } = apiResponse2;
+    const previousScore = data.attributes[0].value;
     additionalTokens = Math.round(((patientScore - previousScore) / 10) * parseInt(args[2]));
-    // console.log(additionalTokens);
-    
 }
-
 const totalTokens = additionalTokens + tokensForScore + parseInt(args[3]);
 
 const tokensToProvide = additionalTokens + tokensForScore;
-console.log(tokensToProvide);
-let imgurl = "";
+
+let imgurl = 'https://gateway.pinata.cloud/ipfs/QmRax6Msco4qCC9XNgkp5yzVS11M9XZ7C5u5tijHFN1Nj8';
 
 if (patientScore > 30 && patientScore < 70) {
-    imgurl = "";
+    imgurl = 'https://gateway.pinata.cloud/ipfs/QmboED5gPwgcoC5DoLbGxMzdgucLneubF5gs2JNrJnJiyW';
 }
 else if (patientScore <= 30) {
-    imgurl = "";
+    imgurl = 'https://gateway.pinata.cloud/ipfs/QmQJbf9QQzzsibK9LphgN8yKLKr4PjYjC8Z2HjpZcNH8Qf';
 }
-else imgurl = "";
-
-
-const patientData = {
-    description: "abcd", // Description provided as argument
-    image: imgurl, // Image URL provided as argument
-    name: "PatientNFT", // Name provided as argument
-    attribute: [
+const patientData = 
+{
+    'description': 'PatientNFT! Shows your Token Score',
+    'image': imgurl,
+    'name': 'PatientNFT',
+    'attributes': [
         {
-            trait_type: "Score",
-            value: patientScore, // Score provided as argument
+            'trait_type': 'Score',
+            'value': patientScore,
         },
         {
-            trait_type: "Tokens",
-            value: totalTokens, // Tokens provided as argument
+            'trait_type': 'Tokens',
+            'value':totalTokens,
         },
         {
-            trait_type: "Address",
-            value: args[1], // Address provided as argument
+            'trait_type': 'Address',
+            'value': args[1],
         }
     ]
 };
 
-const apiurlPatientNft = 'https://test-api-production-678d.up.railway.app/setNftData'; // Replace with the actual API URL
-console.log("HTTP POST Request to", apiurlPatientNft);
-
-const patientRequest = Functions.makeHttpRequest({
-    url: apiurlPatientNft,
-    method: "POST",
+const apiUrlPatientNft = 'https://test-api-production-678d.up.railway.app/setNftData';
+const apiResponse3 = await Functions.makeHttpRequest({
+    url: apiUrlPatientNft,
+    method: 'POST',
     headers: {
-        "Content-Type": "application/json",
+        'Content-Type': 'application/json',
     },
-    data: JSON.stringify(patientData),
+    data: patientData,
 });
-
-// Execute the API request (Promise)
-const patientResponse = await patientRequest;
-if (patientResponse.error) {
-    console.error(
-        patientResponse.response
-            ? `${patientResponse.response.status}, ${patientResponse.response.statusText}`
-            : ""
-    );
-    throw Error("Request failed");
-}
-
-console.log(JSON.stringify(patientResponse));
-const responseData = patientResponse.data;
-
-if (!responseData || !responseData.uri) {
-    throw Error("Invalid response data");
-}
-
-
-
-// Extract the URI from the response
-const uri = responseData.uri;
-console.log(uri);
-
-// ABI encoding
+var { data } = apiResponse3;
+const abiCoder = ethers.AbiCoder.defaultAbiCoder();
 const encoded = abiCoder.encode(
-    ["uint256", "uint256", "string"],
-    [patientScore, tokensToProvide, uri]
+    ['uint256', 'uint256', 'string'],
+    [patientScore, tokensToProvide, data.uri]
 );
-
-// return the encoded data as Uint8Array
 return ethers.getBytes(encoded);
-// return Functions.encodeUint256(patientScore);
