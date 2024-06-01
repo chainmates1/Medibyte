@@ -6,7 +6,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract HealthInsuranceNFT is ERC721URIStorage, Ownable {
     uint256 private _tokenIdCounter;
-    string private constant defaultURI = "ipfs://health-insurance-default-metadata";
+    string private constant defaultURI = "https://gateway.pinata.cloud/ipfs/bafkreicrz7egnp3pcygmhrlgxexgsbto6avgzlqvf7p7fzz272x2haxodm";
 
     constructor() ERC721("HealthInsuranceNFT", "HIN") Ownable(msg.sender){}
 
