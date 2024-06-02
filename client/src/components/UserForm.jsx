@@ -111,8 +111,6 @@ const UserForm = () => {
         usdcAbi,
         await provider.getSigner()
       );
-
-const senderContract = new ethers.Contract(
           import.meta.env.VITE_SENDER, 
           senderAbi,
           await provider.getSigner()
