@@ -481,6 +481,13 @@
 	},
 	{
 		"inputs": [],
+		"name": "clearPatientsWithTests",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "freeHealthCheckupNFT",
 		"outputs": [
 			{
@@ -500,6 +507,50 @@
 				"internalType": "contract FreeHealthKitNFT",
 				"name": "",
 				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getCurrentPatientAndTests",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "patient",
+				"type": "address"
+			},
+			{
+				"internalType": "uint8[6]",
+				"name": "tests",
+				"type": "uint8[6]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getPatientsWithTests",
+		"outputs": [
+			{
+				"internalType": "address[]",
+				"name": "",
+				"type": "address[]"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "getUSDCBalance",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
 			}
 		],
 		"stateMutability": "view",
@@ -556,6 +607,19 @@
 	},
 	{
 		"inputs": [],
+		"name": "indexOfPatientWithTests",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "owner",
 		"outputs": [
 			{
@@ -599,6 +663,25 @@
 				"internalType": "uint8",
 				"name": "",
 				"type": "uint8"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"name": "patientsWithTests",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
 			}
 		],
 		"stateMutability": "view",

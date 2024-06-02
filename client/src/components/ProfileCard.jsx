@@ -38,7 +38,8 @@ const ProfileCard = () => {
     const fetchNFTData = async () => {
       try {
         if (window.ethereum) {
-          const provider = new ethers.BrowserProvider(window.ethereum);
+          // const provider = new ethers.BrowserProvider(window.ethereum);
+          const provider = new ethers.JsonRpcProvider(import.meta.env.VITE_RPC_URL)
           const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
           const account = accounts[0];
           setAccount(account);

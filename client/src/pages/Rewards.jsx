@@ -11,7 +11,7 @@ import insuranceabi from "../abis/HealthInsuranceNFT.json";
 
 const Rewards = () => {
     const location = useLocation();
-    const { tokens, score, id } = location.state || { tokens: "0", score: 0, id: 0 };
+    const { tokens, score, id } = location.state;
     const [rewardAvailability, setRewardAvailability] = useState({
         HealthCheckup: 0,
         HealthKit: 0,
@@ -24,7 +24,7 @@ const Rewards = () => {
 
             const provider = new ethers.BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
-            const signerAddress = signer.getAddress();
+            const signerAddress =  signer.address;
             const checkup_address = import.meta.env.VITE_CHECKUP;
             const kit_address = import.meta.env.VITE_KIT;
             const Insurance_address = import.meta.env.VITE_INSURANCE;
@@ -48,21 +48,21 @@ const Rewards = () => {
 
     const rewardContracts = {
         HealthCheckup: {
-            address: '0x123',
+            address: import.meta.env.VITE_CHECKUP,
             price: 10,
-            image: 'url-to-healthcheckup-image',
+            image: 'https://gateway.pinata.cloud/ipfs/Qmdree1mCWqrAvAa8gjYzCQAEGyQVj4imJ6ZVefJ6q9bYd',
             available: rewardAvailability.HealthCheckup
         },
         HealthKit: {
-            address: '0x456',
+            address: import.meta.env.VITE_KIT,
             price: 20,
-            image: 'url-to-healthkit-image',
+            image: 'https://gateway.pinata.cloud/ipfs/QmegqDLxYX1zHAx1DBSw4SA2v9ymzczXE1qgKDSoPy2Jgp',
             available: rewardAvailability.HealthKit
         },
         HealthInsurance: {
-            address: '0x789',
+            address: import.meta.env.VITE_INSURANCE,
             price: 30,
-            image: 'url-to-healthinsurance-image',
+            image: 'https://gateway.pinata.cloud/ipfs/QmbovfLDsr7JYTaCN1FJYugbfGq5KUkmtyPhYAEiEkbkJg',
             available: rewardAvailability.HealthInsurance
         },
     };
@@ -74,7 +74,8 @@ const Rewards = () => {
             await window.ethereum.request({ method: "eth_requestAccounts" });
             const provider = new ethers.BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
-            const account = signer.getAddress();
+            const account = signer.address;
+            // console.log(account);
             const HEALTH_address = import.meta.env.VITE_HEALTH_CONTRACT;
             const PatientNFT_ADDRESS = import.meta.env.VITE_PATIENTNFT;
             const Medicoin_ADDRESS = import.meta.env.VITE_MEDICOIN;
@@ -88,7 +89,8 @@ const Rewards = () => {
             const balance = ethers.parseUnits(tokenAmount.toString(), 18);
             const rewardPrice = ethers.parseUnits(rewardContracts[rewardKey].price.toString(), 18);
 
-            if (balance > rewardPrice) {
+            if (balance < rewardPrice) {
+                alert("Insufficient token balance");
                 throw new Error("Insufficient token balance");
             }
 

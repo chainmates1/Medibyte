@@ -3,6 +3,7 @@ import { useUser } from "../UserContext";
 import { ethers } from "ethers";
 import usdcAbi from "../abis/USDCABI.json";
 import abi from "../abis/Health_Contract.json";
+import senderAbi from "../abis/Sender.json";
 
 const UserForm = () => {
   const provider = new ethers.BrowserProvider(window.ethereum);
@@ -82,7 +83,7 @@ const UserForm = () => {
         await provider.getSigner()
       );
 
-      if (chainId === DESTINATION_CHAIN_ID || true) { 
+      if (chainId === DESTINATION_CHAIN_ID ) { 
         const approveTx = await usdcContract.approve(contractAddress, (totalPrice));
         console.log(totalPrice);
         await approveTx.wait();
@@ -91,23 +92,26 @@ const UserForm = () => {
         
         alert("Tests selected successfully!");
       } else {
-        const USDC_CONTRACT_ADDRESS1 = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";
+        // console.log(import.meta.env.VITE_S_USDC_CONTRACT_ADDRESS)
         const usdcContract1 = new ethers.Contract(
-          USDC_CONTRACT_ADDRESS1, 
-          usdcAbi, 
-          provider.getSigner()
+          import.meta.env.VITE_S_USDC_CONTRACT_ADDRESS, 
+          usdcAbi,  
+          await provider.getSigner()
         );
+        // console.log(import.meta.env.VITE_SENDER);
         const senderContract = new ethers.Contract(
-          SENDER_CONTRACT_ADDRESS, 
+          import.meta.env.VITE_SENDER, 
           senderAbi,
-          provider.getSigner()
+          await provider.getSigner()
         );
-        const transferTx = await usdcContract1.transfer(senderContract.address, totalPrice);
+        const transferTx = await usdcContract1.transfer(import.meta.env.VITE_SENDER, totalPrice);
         await transferTx.wait();
+        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+        const account = accounts[0];
         const tx = await senderContract.sendMessagePayLINK(
-          DESTINATION_CHAIN_SELECTOR,
+          import.meta.env.VITE_DESTINATION_CHAIN_SELECTOR,
           account,
-          selectedTests,
+          selectedTests,  
           totalPrice
         );
         await tx.wait();
