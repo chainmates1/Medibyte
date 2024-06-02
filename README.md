@@ -1,43 +1,96 @@
-# Medibyte
+# Medibyte Prototype: Setup and Installation Guide
 
-Medibyte is a cutting edge health-focused initiative that leverages the power of blockchain technology to reward users for healthy living! 
+Welcome to the Medibyte prototype project! This guide will help you set up and install the project locally on your system. Please follow the steps below carefully to get started.
 
-**About Us**
+## Prerequisites
 
-The Medibyte Team understands some companies increase costs as a result of unhealthy lifestyle choices. What about those that choose to live healthier and look after themselves? Enter Medibyte. This initiative is aimed at those living the healthier lifestyle and wanting a reward to keep up the good work. We understand that the soy latte might be more expensive than a hot chocolate, so we want to take the byte out of healthy living.
+Make sure you have the following installed on your system:
+- [Node.js](https://nodejs.org/) (version 14.x or higher)
+- [npm](https://www.npmjs.com/) (comes with Node.js)
 
-**Features**
+## Setup Instructions
 
-This system differs from typical cashback schemes that see you wait days or even weeks for cashback on services rendered. Instead, you receive Medicoins based on your own choices and they are made readily available to you after your doctor has inputted your results. The amount of coins you receive is contingent on you improving your 'health score' from your previous check-up. See the example below for greater insights. 
+### Step 1: Fork the Repository
 
-A feature that is greatly overlooked is that this scheme is totally free! Unlike centralised corporations, our intention is only to guide you towards our platform and promote healthier living. 
+1. Go to the Medibyte GitHub repository.
+2. Click the "Fork" button on the top right corner of the page. This will create a copy of the repository under your GitHub account.
+3. If possible, give a star to the project to show your support!
 
-This platform is also encrypted and tested using modern software tools. In the same vein as protecting your data, the  Medibyte team also ensures that they will not sell your data.
+### Step 2: Clone the Forked Repository
+
+1. Navigate to your forked repository on GitHub.
+2. Click the "Code" button and copy the HTTPS URL.
+3. Open your terminal and run the following command to clone the repository:
+    bash
+    git clone <HTTPS_URL>
+    
+   Replace <HTTPS_URL> with the URL you copied in the previous step.
+
+### Step 3: Change Directory to Medibyte
+
+Navigate to the Medibyte project directory by running:
+bash
+cd Medibyte
 
 
-*Example*
+### Step 4: Open the Project in Your Code Editor
 
-Harry goes for a general check up at his local health professional. During the appointment he gets a blood pressure test. His doctor enters the results onto the Medibyte platform. The Medibyte platform takes this measurement and benchmarks it to your results the last time you visited a health professional. After your appointment, you are able to log onto the site and claim your reward, exchanging it for Medicoins and then subsequently other recognised crypto or fiat currency.
-
-**Services**
-
-We are updating this all the time depending on the services you care about the most. So far, we offer rewards for:
-1. blood pressure tests;
-2. flu vaccinations; 
-3.
-4.
-5.
-6.
+If you're using Visual Studio Code, you can open the project by running:
+bash
+code .
 
 
-**New Account**
+### Step 5: Change Directory to the Client
 
-The process is a walk in the park:
+Navigate to the client directory where the frontend code resides:
+bash
+cd client
 
-1. Register your account on the landing page; 
-2. Tell your doctor or hospital that you use Medibyte; and 
-3. Sit back while your data works for you!
 
-By harnessing the power of blockchain, your medical records are stored in a secure and unchanging database that acts as a reference point for health professionals and services. 
+### Step 6: Install Dependencies
 
-By investing in yourself, we believe you should be rewarded for it! If you show an improvement (not matter how big or small) between appointments with a recognised health professional, Medibyte will grant a token that may be exchange for your local currency. 
+Install the necessary dependencies for the project by running:
+bash
+npm install
+
+
+### Step 7: Start the Development Server
+
+Start the development server by running:
+bash
+npm run dev
+
+
+Once the server starts, you will see an output similar to:
+
+VITE v5.2.0  ready in 123 ms
+
+  ➜  Local:   http://localhost:3000/
+  ➜  Network: use --host to expose
+  ➜  press h to show help
+
+
+### Step 8: View the Project
+
+Open your web browser and navigate to http://localhost:3000/. You should now see the Medibyte prototype running locally on your machine.
+
+## Additional Scripts
+
+- *Build*: To build the project for production, run:
+  bash
+  npm run build
+  
+- *Preview*: To preview the production build, run:
+  bash
+  npm run preview
+  
+- *Lint*: To lint the code, run:
+  bash
+  npm run lint
+  
+
+## Contributing
+
+We welcome contributions! Please refer to our [Contributing Guide](CONTRIBUTING.md) for more details on how you can contribute to the project.
+
+Thank you for setting up the Medibyte prototype. If you encounter any issues or have any questions, feel free to open an issue on the repository. Happy coding!
