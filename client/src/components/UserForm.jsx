@@ -92,10 +92,8 @@ const UserForm = () => {
       alert("Smart contract is not loaded.");
       return;
     }
-    const DESTINATION_CHAIN_ID = "43113";
-    const selectedTestPrices = selectedTests.map(
-      (testId) => tests.find((test) => test.id === testId).price
-    );
+    const DESTINATION_CHAIN_ID = 43113;
+    const selectedTestPrices = selectedTests.map(testId => tests.find(test => test.id === testId).price);
     console.log(selectedTestPrices);
 
     // const totalPrice = selectedTestPrices.reduce((total, price) => total.add(price), ethers.BigNumber.from(0));
@@ -104,7 +102,7 @@ const UserForm = () => {
       totalPrice += Number(selectedTestPrices[i]);
     }
 
-    console.log(totalPrice);
+    // console.log(totalPrice);
     const USDC_CONTRACT_ADDRESS = import.meta.env.VITE_USDC;
 
     try {
@@ -114,47 +112,19 @@ const UserForm = () => {
         await provider.getSigner()
       );
 
-      if (chainId === DESTINATION_CHAIN_ID) {
-        const approveTx = await usdcContract.approve(
-          contractAddress,
-          totalPrice
-        );
-        console.log(totalPrice);
-        await approveTx.wait();
-        const tx = await contract.selectTests(
-          signer.address,
-          selectedTests,
-          totalPrice
-        );
-        await tx.wait();
-
-        alert("Tests selected successfully!");
-      } else {
-        // console.log(import.meta.env.VITE_S_USDC_CONTRACT_ADDRESS)
-        const usdcContract1 = new ethers.Contract(
-          import.meta.env.VITE_S_USDC_CONTRACT_ADDRESS,
-          usdcAbi,
-          await provider.getSigner()
-        );
-        // console.log(import.meta.env.VITE_SENDER);
-        const senderContract = new ethers.Contract(
-          import.meta.env.VITE_SENDER,
+const senderContract = new ethers.Contract(
+          import.meta.env.VITE_SENDER, 
           senderAbi,
           await provider.getSigner()
         );
-        const transferTx = await usdcContract1.transfer(
-          import.meta.env.VITE_SENDER,
-          totalPrice
-        );
+        const transferTx = await usdcContract1.transfer(import.meta.env.VITE_SENDER, totalPrice);
         await transferTx.wait();
-        const accounts = await window.ethereum.request({
-          method: "eth_requestAccounts",
-        });
+        const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
         const account = accounts[0];
         const tx = await senderContract.sendMessagePayLINK(
           import.meta.env.VITE_DESTINATION_CHAIN_SELECTOR,
           account,
-          selectedTests,
+          selectedTests,  
           totalPrice
         );
         await tx.wait();
