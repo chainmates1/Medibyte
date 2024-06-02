@@ -58,7 +58,7 @@ contract Health_Contract is IHealth_Contract, FunctionsClient, ConfirmedOwner, I
     error UnauthorizedDoctor(address caller);
     error UnexpectedRequestID(bytes32 requestId);
     error PatientNotFound(address patient);
-    error InvalidUsdcToken(); 
+    error InvalidUsdcToken();
     error InsufficientBalance(uint256 required, uint256 available);
 
     event Response(bytes32 indexed requestId, bytes response, bytes err);
@@ -74,6 +74,8 @@ contract Health_Contract is IHealth_Contract, FunctionsClient, ConfirmedOwner, I
     mapping(address => bool) public authorizedDoctors;
     mapping(address => uint8[6]) public patientTests;
     mapping(address => uint256) public rewardThresholds;
+    address[] public patientsWithTests;
+    uint256 public indexOfPatientWithTests = 0;
 
     constructor(
         address router,
@@ -123,6 +125,7 @@ contract Health_Contract is IHealth_Contract, FunctionsClient, ConfirmedOwner, I
             require(selectedTests[i] < 6, "Invalid test index");
             tests[selectedTests[i]] = 1; // Mark selected tests
         }
+        patientsWithTests.push(_patient); // Add patient to the list of patients with tests
 
         emit TestsSelected(_patient, selectedTests);
     }
@@ -225,21 +228,21 @@ contract Health_Contract is IHealth_Contract, FunctionsClient, ConfirmedOwner, I
         emit Response(requestId, response, err);
     }
 
-    //Funtion Automation :
+    // Function Automation :
 
     function checkLog(
         Log calldata log,
         bytes memory
     ) external pure returns (bool upkeepNeeded, bytes memory performData) {
         upkeepNeeded = true;
-        bytes32 requestId=log.topics[1];
-        (bytes memory response,bytes memory err) = abi.decode(log.data, (bytes, bytes));
+        bytes32 requestId = log.topics[1];
+        (bytes memory response, bytes memory err) = abi.decode(log.data, (bytes, bytes));
         performData = abi.encode(requestId, response, err);
     }
 
     // Function to be called by Chainlink Automation
     function performUpkeep(bytes calldata performData) external {
-        (bytes32 requestId, bytes memory response,bytes memory err) = abi.decode(performData, (bytes32, bytes,bytes));
+        (bytes32 requestId, bytes memory response, bytes memory err) = abi.decode(performData, (bytes32, bytes, bytes));
         (uint256 healthScore, uint256 tokensEarned, string memory newUri) = abi.decode(response, (uint256, uint256, string));
 
         uint256 tokenId = requestIdToTokenId[requestId];
@@ -254,16 +257,37 @@ contract Health_Contract is IHealth_Contract, FunctionsClient, ConfirmedOwner, I
             patientNFT.setTokenURI(tokenId, newUri);
         }
 
-        //Transfer healthTokens to Patient Address
+        // Transfer healthTokens to Patient Address
         healthToken.mint(patient, tokensEarned);
 
-        //Send the USDC tokens to Doctor(Owner) 
-        uint256 USDBalance=i_usdcToken.balanceOf(address(this));
+        // Send the USDC tokens to Doctor(Owner)
+        uint256 USDBalance = i_usdcToken.balanceOf(address(this));
         i_usdcToken.transfer(owner(), USDBalance);
 
         delete patientTests[patient];
-        emit UpkeepPerformed(requestId,response,err);
+        indexOfPatientWithTests = indexOfPatientWithTests + 1;
+
+        emit UpkeepPerformed(requestId, response, err);
         emit TestsCleared(patient);
         emit HealthScoreUpdated(tokenId, healthScore, tokensEarned);
+    }
+
+    function getPatientsWithTests() external view onlyAuthorizedDoctor returns (address[] memory) {
+        return patientsWithTests;
+    }
+
+    function clearPatientsWithTests() external onlyOwner {
+        delete patientsWithTests;
+        indexOfPatientWithTests = 0;
+    }
+
+    function getCurrentPatientAndTests() external view onlyAuthorizedDoctor returns (address patient, uint8[6] memory tests) {
+        require(indexOfPatientWithTests < patientsWithTests.length, "No more patients with tests");
+        patient = patientsWithTests[indexOfPatientWithTests];
+        tests = patientTests[patient];
+    }
+    
+    function getUSDCBalance() external view returns (uint256){
+        return i_usdcToken.balanceOf(address(this));
     }
 }

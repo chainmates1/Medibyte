@@ -33,7 +33,7 @@ const UserForm = () => {
 
   const toggleDescription = (id) => {
     if (showDescriptions.includes(id)) {
-      setShowDescriptions(showDescriptions.filter(testId => testId !== id));
+      setShowDescriptions(showDescriptions.filter((testId) => testId !== id));
     } else {
       setShowDescriptions([...showDescriptions, id]);
     }
@@ -41,7 +41,7 @@ const UserForm = () => {
 
   const handleTestSelection = (id) => {
     if (selectedTests.includes(id)) {
-      setSelectedTests(selectedTests.filter(testId => testId !== id));
+      setSelectedTests(selectedTests.filter((testId) => testId !== id));
     } else {
       setSelectedTests([...selectedTests, id]);
     }
@@ -127,7 +127,7 @@ const UserForm = () => {
     <div className="w-full md:w-2/3 p-4">
       <h2 className="text-2xl font-semibold mb-4">Select Tests</h2>
       <form onSubmit={handleSubmit} className="space-y-4">
-        {tests.map(test => (
+        {tests.map((test) => (
           <div key={test.id} className="border p-4 rounded shadow">
             <div className="flex items-center justify-between">
               <div>
@@ -137,10 +137,7 @@ const UserForm = () => {
                   className="mr-2"
                   onChange={() => handleTestSelection(test.id)}
                 />
-                <label
-                  htmlFor={`test-${test.id}`}
-                  className="cursor-pointer"
-                >
+                <label htmlFor={`test-${test.id}`} className="cursor-pointer">
                   {test.name}
                 </label>
               </div>
@@ -156,7 +153,12 @@ const UserForm = () => {
                   viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20 10 10 0 010-20z"></path>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 110 20 10 10 0 010-20z"
+                  ></path>
                 </svg>
               </button>
             </div>
@@ -167,12 +169,25 @@ const UserForm = () => {
             )}
           </div>
         ))}
-        <button
+        {/* <button
           type="submit"
           className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
         >
           Submit
+        </button> */}
+        <div className="flex justify-center">
+        <button className="relative inline-block text-lg group mt-4">
+          <span className="relative z-10 block px-5 py-3 overflow-hidden font-medium leading-tight text-gray-800 transition-colors duration-300 ease-out border-2 border-gray-900 rounded-lg group-hover:text-white">
+            <span className="absolute inset-0 w-full h-full px-5 py-3 rounded-lg bg-gray-50"></span>
+            <span className="absolute left-0 w-48 h-48 -ml-2 transition-all duration-300 origin-top-right -rotate-90 -translate-x-full translate-y-12 bg-gray-900 group-hover:-rotate-180 ease"></span>
+            <span className="relative font-extrabold">Claim</span>
+          </span>
+          <span
+            className="absolute bottom-0 right-0 w-full h-12 -mb-1 -mr-1 transition-all duration-200 ease-linear bg-green-400 rounded-lg group-hover:mb-0 group-hover:mr-0"
+            data-rounded="rounded-lg"
+          ></span>
         </button>
+        </div>
       </form>
     </div>
   );

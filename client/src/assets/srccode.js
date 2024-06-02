@@ -21,10 +21,11 @@ var { data } = apiResponseR;
 const dataRangeArray = data.data;
 
 let totalDeviation = 0;
-
+let countTests = 0;
 for (let i = 0; i < dataArray.length; i++) {
     if(dataArray[i] == 0)
         continue;
+    countTests++;
     const parameter = dataArray[i];
     const normalRange = dataRangeArray[i];
     const mean = (normalRange.min + normalRange.max) / 2;
@@ -43,7 +44,7 @@ for (let i = 0; i < dataArray.length; i++) {
     totalDeviation += deviation;
 }
 
-const averageDeviation = totalDeviation / dataArray.length;
+const averageDeviation = totalDeviation / countTests;
 
 const b = 100 - averageDeviation;
 const patientScore = Math.round(b);
