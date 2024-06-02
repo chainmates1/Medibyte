@@ -62,7 +62,7 @@ const UserForm = () => {
       alert("Smart contract is not loaded.");
       return;
     }
-    const DESTINATION_CHAIN_ID = "43113";
+    const DESTINATION_CHAIN_ID = 43113;
     const selectedTestPrices = selectedTests.map(testId => tests.find(test => test.id === testId).price);
     console.log(selectedTestPrices);
     
@@ -72,7 +72,7 @@ const UserForm = () => {
       totalPrice += Number(selectedTestPrices[i])
     }
 
-    console.log(totalPrice);
+    // console.log(totalPrice);
     const USDC_CONTRACT_ADDRESS = import.meta.env.VITE_USDC;
 
   
@@ -83,9 +83,9 @@ const UserForm = () => {
         await provider.getSigner()
       );
 
-      if (chainId === DESTINATION_CHAIN_ID ) { 
+      console.log(usdcContract);
+      if (chainId == DESTINATION_CHAIN_ID ) { 
         const approveTx = await usdcContract.approve(contractAddress, (totalPrice));
-        console.log(totalPrice);
         await approveTx.wait();
         const tx = await contract.selectTests(signer.address, selectedTests, (totalPrice));
         await tx.wait();

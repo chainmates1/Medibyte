@@ -25,9 +25,6 @@ const PatientsSheet = () => {
         const signer = await provider.getSigner();
         const userAddress = await signer.getAddress();
 
-        // console.log('User Address:', userAddress);
-        // console.log('Authorized Address:', authorizedAddress);
-
         if (userAddress.toLowerCase() === authorizedAddress) {
           setIsAuthorized(true);
           fetchPatients(signer);
@@ -42,14 +39,27 @@ const PatientsSheet = () => {
     const fetchPatients = async (signer) => {
       try {
         const contract = new ethers.Contract(contractAddress, contractABI, signer);
-        console.log("Health Contract is working at address: ",contract.target);
-        // console.log(selectedTests);
-        contract.on('TestsSelected', (patientAddress, selectedTests) => {
-          console.log('Event received:', patientAddress, selectedTests);
-          setPatients(prevPatients => [...prevPatients, { address: patientAddress, selectedTests }]);
-        });
-        console.log('Contract event listener set up');
-        console.log(patients);
+        console.log("Health Contract is working at address: ", contract.target);
+
+        let hasMorePatients = true;
+        const patientsList = [];
+        const patientSet = new Set();
+
+        while (hasMorePatients) {
+          try {
+            const [patientAddress, selectedTests] = await contract.getCurrentPatientAndTests();
+
+            // Ensure uniqueness
+            if (!patientSet.has(patientAddress)) {
+              patientSet.add(patientAddress);
+              patientsList.push({ address: patientAddress, selectedTests });
+            }
+
+            setPatients([...patientsList]); // Update state with new patient
+          } catch (error) {
+            hasMorePatients = false;
+          }
+        }
       } catch (error) {
         console.error('Error fetching patients:', error);
       }
@@ -68,7 +78,14 @@ const PatientsSheet = () => {
   }, [authorizedAddress, contractABI, contractAddress]);
 
   const handleRowClick = (address, selectedTests) => {
-    navigate(`/patient/${address}`, { state: { selectedTests } });
+    const selectedIndices = [];
+    for(let i = 0;i < 6;i++){
+      if(selectedTests[i] === 1n){
+        selectedIndices.push(i);
+      }
+    }
+    navigate(`/patient/${address}`, { state: { selectedTests: selectedIndices } });
+    console.log(selectedIndices);
   };
 
   if (!isAuthorized) {

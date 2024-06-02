@@ -1,19 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocation, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { ethers } from 'ethers';
-import abi from "../abis/Health_Contract.json"
+import abi from "../abis/Health_Contract.json";
+import Header from '../components/header';
+import fs from 'fs';
+
 
 const TestResult = () => {
   const { address } = useParams();
   const location = useLocation();
   const { selectedTests } = location.state || {};
-  const [testResults, setTestResults] = useState(Array(10).fill(0));
+  const [testResults, setTestResults] = useState(Array(10).fill(0)); // Ensure testResults is always an array
   const testValues = [0.5, 0.75, 1.25, 2.0, 1.75, 2.0]; // Array of test values
+
+  useEffect(() => {
+    // Initialize testResults with zeros for selected tests
+    if (selectedTests && selectedTests.length > 0) {
+      const initialResults = Array(10).fill(0);
+      setTestResults(initialResults);
+    }
+  }, [selectedTests]);
 
   const handleChange = (index, value) => {
     const newResults = [...testResults];
-    newResults[index] = value;
+    newResults[index] = parseFloat(value); // Ensure value is a number
     setTestResults(newResults);
   };
 
@@ -22,19 +33,22 @@ const TestResult = () => {
 
     try {
       // Sending test results to the API
-      await axios.post('/setTestData', { data: testResults });
+      await axios.post('https://test-api-production-678d.up.railway.app/setTestData', { data: testResults });
+      console.log("hi1");
 
       // Calculate amountPaid based on selected tests
       const amountPaid = selectedTests.reduce((sum, testIndex) => sum + testValues[testIndex], 0);
 
       // Dummy parameters for the contract function call
-      const source = "dummy source";
-      const encryptedSecretsUrls = ethers.utils.randomBytes(32); // Dummy encrypted secrets
+      const source = fs
+      .readFileSync(path.resolve(__dirname, "../assets/srccode.js"))
+      .toString(); // Replace with actual source if needed
+      const encryptedSecretsUrls = "0x"; // Dummy encrypted secrets
       const donHostedSecretsSlotID = 0;
       const donHostedSecretsVersion = 0;
-      const subscriptionId = 0;
+      const subscriptionId = 9105;
       const gasLimit = 300000;
-      const donID = ethers.constants.HashZero; // Dummy DON ID
+      const donID = "0x66756e2d6176616c616e6368652d66756a692d31000000000000000000000000"; // Dummy DON ID
 
       // Interacting with the smart contract
       const provider = new ethers.BrowserProvider(window.ethereum);
@@ -63,32 +77,40 @@ const TestResult = () => {
   };
 
   return (
-    <div className="w-full md:w-2/3 p-4 mx-auto">
-      <h2 className="text-2xl font-semibold mb-4">Test Results for Patient: {address}</h2>
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {selectedTests && selectedTests.map(testIndex => (
-          <div key={testIndex} className="border p-4 rounded shadow">
-            <label className="block text-gray-700 text-sm font-bold mb-2">
-              Test {testIndex + 1} Result:
-              <input
-                type="number"
-                name={`test${testIndex}`}
-                value={testResults[testIndex]}
-                onChange={(e) => handleChange(testIndex, e.target.value)}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                required
-              />
-            </label>
-          </div>
-        ))}
-        <button
-          type="submit"
-          className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Submit
-        </button>
-      </form>
-    </div>
+    <>
+      <Header />
+      <br />
+      <br />
+      <br />
+      <br />
+      <div className="w-full md:w-2/3 p-4 mx-auto">
+        <h2 className="text-2xl font-semibold mb-4">Test Results for Patient: {address}</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {selectedTests && selectedTests.map(testIndex => (
+            <div key={testIndex} className="border p-4 rounded shadow">
+              <label className="block text-white-700 text-sm font-bold mb-2">
+                Test {testIndex + 1} Result:
+                <input
+                  type="number"
+                  step="any"
+                  name={`test${testIndex}`}
+                  value={testResults[testIndex] || ''} // Default to '' if undefined
+                  onChange={(e) => handleChange(testIndex, e.target.value)}
+                  className="mt-1 block w-full px-3 py-2 border border-black-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  required
+                />
+              </label>
+            </div>
+          ))}
+          <button
+            type="submit"
+            className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Submit
+          </button>
+        </form>
+      </div>
+    </>
   );
 };
 
