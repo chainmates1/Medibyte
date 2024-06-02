@@ -52,6 +52,7 @@ export const navigation = [
     title: "Collaboration",
     url: "#collaboration",
   },
+  
 ];
 
 export const heroIcons = [homeSmile, file02, searchMd, plusSquare];

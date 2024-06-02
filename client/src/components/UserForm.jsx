@@ -163,7 +163,7 @@ const UserForm = () => {
               </button>
             </div>
             {showDescriptions.includes(test.id) && (
-              <div className="mt-2 p-2 bg-gray-100 rounded shadow text-black">
+              <div className="mt-2 p-2 bg-n-6 rounded shadow text-n-2">
                 {test.description}
               </div>
             )}

@@ -1,15 +1,17 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { disablePageScroll, enablePageScroll } from "scroll-lock";
+import { navigation } from "../constants/data";
+import Button from "./Button";
+import MenuSvg from "../assets/svg/MenuSvg";
+import { HamburgerMenu } from "./design/Header";
 import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import HealthContract from "../abis/Health_Contract.json";
 import { useUser } from "../UserContext";
-import Button from "./Button";
-import MenuSvg from "../assets/svg/MenuSvg";
-import { HamburgerMenu } from "./design/Header";
+import { sourcecd } from "../assets/srccode";
 
-const Header = () => {
-  const location = useLocation();
+const SubHeader = () => {
+  const pathname = useLocation();
   const [openNavigation, setOpenNavigation] = useState(false);
   const { account, setAccount, contract, setContract } = useUser();
   const [isConnected, setIsConnected] = useState(false);
@@ -33,7 +35,7 @@ const Header = () => {
         setError("MetaMask extension not detected. Please install MetaMask.");
       }
     } catch (error) {
-      console.error(error);
+
     }
     navigate("/user");
   };
@@ -48,22 +50,11 @@ const Header = () => {
     }
   };
 
-  const handleClick = (event) => {
-    event.preventDefault();
-    const targetId = event.currentTarget.getAttribute("href").substring(1);
-    const targetElement = document.getElementById(targetId);
-    if (targetElement) {
-      targetElement.scrollIntoView({ behavior: "smooth" });
-    }
-    window.location.hash = targetId;
-    handleClickClose();
-  };
+  const handleClick = () => {
+    if (!openNavigation) return;
 
-  const handleClickClose = () => {
-    if (openNavigation) {
-      setOpenNavigation(false);
-      enablePageScroll();
-    }
+    enablePageScroll();
+    setOpenNavigation(false);
   };
 
   useEffect(() => {
@@ -83,68 +74,54 @@ const Header = () => {
           setAccount("");
         }
       } catch (error) {
-        console.error(error);
+
       }
     };
 
     checkConnection();
-
-    if (window.ethereum) {
-      window.ethereum.on("accountsChanged", (accounts) => {
-        if (accounts.length === 0) {
-          setAccount("");
-          setIsConnected(false);
-          localStorage.removeItem("connectedAccount");
-        } else {
-          setAccount(accounts[0]);
-          setIsConnected(true);
-          localStorage.setItem("connectedAccount", accounts[0]);
-        }
-      });
-    }
+    window.ethereum.on("accountsChanged", (accounts) => {
+      if (accounts.length === 0) {
+        setAccount("");
+        setIsConnected(false);
+        localStorage.removeItem("connectedAccount");
+      } else {
+        setAccount(accounts[0]);
+        setIsConnected(true);
+        localStorage.setItem("connectedAccount", accounts[0]);
+      }
+    });
   }, [setIsConnected, setAccount]);
-
-  const navigation = [
-    {
-      id: "0",
-      title: "About Us",
-      url: "#",
-    },
-    {
-      id: "1",
-      title: "Features",
-      url: "#features",
-    },
-    {
-      id: "2",
-      title: "Collaboration",
-      url: "#collaboration",
-    },
-  ];
 
   return (
     <div
-      className={`fixed top-0 left-0 w-full z-50 border-b border-n-6 lg:bg-n-8/90 lg:backdrop-blur-sm ${openNavigation ? "bg-n-8" : "bg-n-8/90 backdrop-blur-sm"}`}
+      className={`fixed top-0 py-5 left-0 w-full z-50 border-b border-n-6 lg:bg-n-8/90 lg:backdrop-blur-sm ${openNavigation ? "bg-n-8" : "bg-n-8/90 backdrop-blur-sm"
+        }`}
     >
       <div className="flex items-center px-5 lg:px-7.5 xl:px-10 max-lg:py-4">
         <button className="block w-[12rem] xl:mr-8" onClick={() => navigate("/")}>
           <h1 className="h1 text-4xl text-color-4">MediByte</h1>
         </button>
+
+
         <nav
-          className={`${openNavigation ? "flex" : "hidden"} fixed top-[5rem] left-0 right-0 bottom-0 bg-n-8 lg:static lg:flex lg:mx-auto lg:bg-transparent`}
+          className={`${openNavigation ? "flex" : "hidden"
+            } fixed top-[5rem] left-0 right-0 bottom-0 bg-n-8 lg:static lg:flex lg:mx-auto lg:bg-transparent`}
         >
-          <div className="relative z-2 flex flex-col items-center justify-center m-auto lg:flex-row">
+          {/* <div className="relative z-2 flex flex-col items-center justify-center m-auto lg:flex-row">
             {navigation.map((item) => (
               <a
                 key={item.id}
                 href={item.url}
                 onClick={handleClick}
-                className={`block relative font-code text-2xl uppercase text-n-1 transition-colors hover:text-color-1 ${item.onlyMobile ? "lg:hidden" : ""} px-6 py-6 md:py-8 lg:-mr-0.25 lg:text-sm lg:font-semibold ${item.url === window.location.hash ? "z-2 lg:text-n-1" : "lg:text-n-1/50"} lg:leading-5 lg:hover:text-n-1 xl:px-12`}
+                className={`block relative font-code text-2xl uppercase text-n-1 transition-colors hover:text-color-1 ${item.onlyMobile ? "lg:hidden" : ""
+                  } px-6 py-6 md:py-8 lg:-mr-0.25 lg:text-sm lg:font-semibold ${item.url === pathname.hash ? "z-2 lg:text-n-1" : "lg:text-n-1/50"
+                  } lg:leading-5 lg:hover:text-n-1 xl:px-12`}
               >
                 {item.title}
               </a>
             ))}
-          </div>
+          </div> */}
+
           <HamburgerMenu />
         </nav>
         <button
@@ -155,7 +132,8 @@ const Header = () => {
         </button>
         <button
           onClick={connectWallet}
-          className={`relative inline-block text-lg group lg:inline-block hidden ${isConnected ? "cursor-default" : ""}`}
+          className={`relative inline-block text-lg group lg:inline-block hidden ${isConnected ? "cursor-default" : ""
+            }`}
         >
           {isConnected ? (
             <span className="relative z-10 block px-5 py-3 overflow-hidden font-medium leading-tight text-green-500 border-2 border-green-500 rounded-lg">
@@ -179,6 +157,7 @@ const Header = () => {
             </>
           )}
         </button>
+
         <Button className="ml-auto lg:hidden" px="px-3" onClick={toggleNavigation}>
           <MenuSvg openNavigation={openNavigation} />
         </Button>
@@ -192,4 +171,4 @@ const Header = () => {
   );
 };
 
-export default Header;
+export default SubHeader;

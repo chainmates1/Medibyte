@@ -3,7 +3,7 @@ import { useLocation, useParams } from 'react-router-dom';
 import axios from 'axios';
 import { ethers } from 'ethers';
 import abi from "../abis/Health_Contract.json";
-import Header from '../components/header';
+import SubHeader from '../components/SubHeader';
 import {sourcecd} from "../assets/srccode";
 
 const TestResult = () => {
@@ -75,13 +75,13 @@ const TestResult = () => {
 
   return (
     <>
-      <Header />
+      <SubHeader />
       <br />
       <br />
       <br />
       <br />
       <div className="w-full md:w-2/3 p-4 mx-auto">
-        <h2 className="text-2xl font-semibold mb-4">Test Results for Patient: {address}</h2>
+        <h2 className="text-2xl cont-semibold mb-4 text-n-2"><span className='font-extrabold'>Test Results for Patient:</span> {address}</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           {selectedTests && selectedTests.map(testIndex => (
             <div key={testIndex} className="border p-4 rounded shadow">
@@ -93,7 +93,7 @@ const TestResult = () => {
                   name={`test${testIndex}`}
                   value={testResults[testIndex] || ''} // Default to '' if undefined
                   onChange={(e) => handleChange(testIndex, e.target.value)}
-                  className="mt-1 block w-full px-3 py-2 border border-black-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                  className="mt-1 text-n-6 block w-full px-3 py-2 border border-black-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
                   required
                 />
               </label>
@@ -101,7 +101,7 @@ const TestResult = () => {
           ))}
           <button
             type="submit"
-            className="w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            className="w-full text-black bg-white hover:bg-green-500 hover:text-white font-bold py-2 px-4 rounded "
           >
             Submit
           </button>

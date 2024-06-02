@@ -97,13 +97,13 @@ const PatientsSheet = () => {
       <table className="min-w-full">
         <thead>
           <tr>
-            <th className="py-2 px-4 border-b">Registered Patient Addresses</th>
+            <th className="py-5 px-4 border-b font-extrabold">Registered Patient Addresses</th>
           </tr>
         </thead>
         <tbody>
           {patients.map((patient) => (
-            <tr key={patient.address} onClick={() => handleRowClick(patient.address, patient.selectedTests)} className="cursor-pointer hover:bg-gray-100">
-              <td className="py-2 px-4 border-b">{patient.address}</td>
+            <tr key={patient.address} onClick={() => handleRowClick(patient.address, patient.selectedTests)} className="cursor-pointer hover:bg-n-6">
+              <td className="py-2 px-4 border-b"><span className='font-extrabold'>Patient's Address:</span> {patient.address}</td>
             </tr>
           ))}
         </tbody>

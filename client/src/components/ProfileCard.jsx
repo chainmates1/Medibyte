@@ -115,7 +115,7 @@ const ProfileCard = () => {
         />
       </div>
       <div className="text-center mt-2">
-        <h2 className="font-semibold">
+        <h2 className="font-semibold text-n-2">
           {account ? `${account.substring(0, 5)}...${account.slice(-3)}` : "0x"}
         </h2>
       </div>

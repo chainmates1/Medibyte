@@ -1,11 +1,11 @@
 import React from 'react';
-import Header from '../components/header';
+import SubHeader from '../components/SubHeader';
 import PatientsSheet from '../components/PatientsSheet';
 
 const DoctorProfile = () => {
   return (
     <div className="container mx-auto p-4">
-      <Header />
+      <SubHeader />
       <br />
       <br />
       <br />

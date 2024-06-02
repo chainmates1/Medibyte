@@ -3,7 +3,7 @@ import { ethers } from "ethers";
 import abi from "../abis/Health_Contract.json";
 import mediabi from "../abis/MediCoin.json";
 import patientNFTAbi from "../abis/PatientNFT.json";
-import Header from "../components/header";
+import SubHeader from "../components/SubHeader";
 import { useLocation } from 'react-router-dom';
 import checkupabi from "../abis/FreeHealthCheckupNFT.json";
 import kitabi from "../abis/FreeHealthKitNFT.json";
@@ -159,7 +159,7 @@ const Rewards = () => {
 
     return (
         <div className="container mx-auto py-10 px-4 sm:px-6 lg:px-8">
-      <Header />
+      <SubHeader />
       <br />
       <br />
       <h1 className="h1 text-center mb-10">Claim Your Rewards</h1>
@@ -169,7 +169,7 @@ const Rewards = () => {
             <div
               key={key}
               className="card bg-n-6 border border-stroke-1 p-5 rounded-lg shadow-lg transition-transform transform hover:scale-105 flex flex-col items-center"
-              onClick={() => claimReward(key)}
+              
             >
               <img
                 src={image}
@@ -185,7 +185,7 @@ const Rewards = () => {
               <p className="body-1 text-center text-stroke-2">
                 Price: {price} Health Tokens
               </p>
-              <button className="relative inline-block text-lg group mt-4">
+              <button className="relative inline-block text-lg group mt-4" onClick={() => claimReward(key)}>
                 <span className="relative z-10 block px-5 py-3 overflow-hidden font-medium leading-tight text-gray-800 transition-colors duration-300 ease-out border-2 border-gray-900 rounded-lg group-hover:text-white">
                   <span className="absolute inset-0 w-full h-full px-5 py-3 rounded-lg bg-gray-50"></span>
                   <span className="absolute left-0 w-48 h-48 -ml-2 transition-all duration-300 origin-top-right -rotate-90 -translate-x-full translate-y-12 bg-gray-900 group-hover:-rotate-180 ease"></span>
@@ -195,6 +195,7 @@ const Rewards = () => {
                   className="absolute bottom-0 right-0 w-full h-12 -mb-1 -mr-1 transition-all duration-200 ease-linear bg-green-400 rounded-lg group-hover:mb-0 group-hover:mr-0"
                   data-rounded="rounded-lg"
                 ></span>
+                
               </button>
             </div>
           ))}
