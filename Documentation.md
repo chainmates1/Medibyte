@@ -1,11 +1,10 @@
-Medibyte 
+Medibyte
 
-*Unlock your health potential with Medibyte - where health meets innovation, revolutionise your well-being with Medibyte services* 🩺
+Unlock your health potential with Medibyte - where health meets innovation. Revolutionize your well-being with Medibyte services. 🩺
 
+Medibyte leverages the Blockchain Technology to reward users with on-chain tokens linked to unique dynamic NFTs. The project aims to incentivize healthy lifestyle choices by rewarding users with MediCoin tokens, based on off-chain health-related data.
 
-Medibyte is a project that leverages the power of the Avalanche smart contract platform to reward users with onchain tokens that link to a unique dynamic NFT. The project attempts to promote healthy living choices by rewarding users with Medicoin tokens (transferable to USDC tokens) according to data held offchain health-related data. 
-
-The project is accessible to users across the globe and ensures a data intensive process like searching and maintaining health records, a very easy task with its friendly user interface. You can see it live here: https://
+Accessible to users globally, Medibyte streamlines data-intensive processes like searching and maintaining health records through its user-friendly interface. Experience it live here: [Medibyte Platform]()
 
 *You should be met with a homepage that looks like this:*
 ![alt text](image.png)
@@ -25,82 +24,158 @@ The primary goals of Medibyte are:
 2.Enhance Patient Engagement: The reward system fosters a more interactive and engaging experience for patients, encouraging them to regularly participate in health check-ups and follow through on treatments.
 
 3.Strengthen Patient-Provider Relationships: Healthcare providers can use Medibyte to build stronger relationships with their patients, enhancing patient loyalty and satisfaction through a system that recognizes and rewards their efforts.
-
+*
 Medibyte envisions a healthcare ecosystem where patients are more proactive about their health, leading to better health outcomes and a more efficient healthcare system overall.
 
 
-**How it works**
+## How It Works: Detailed Architecture
+
+### Overview
 
 Medibyte is a web3-based health incentive platform that integrates blockchain technology to reward patients for health improvements. The platform consists of several components: smart contracts, IPFS for data storage, Chainlink services, and a frontend built with modern web technologies. Here’s a detailed breakdown of the architecture and how each part works together:
 
-1. Patient Selects Tests and Pays
-   
-Payment Options
-->On the Same Chain: If the patient and doctor are on the same chain (e.g., Avalanche), the patient pays for the tests   
-  directly to the Health_Contract using USDC.
-->Cross-Chain via CCIP: If the patient is on a different chain, they can still pay using USDC via Chainlink's Cross-Chain 
-  Interoperability Protocol (CCIP). This involves transferring data along with the tokens, where the data includes a 
-  function selector and its arguments.
-Function: selectTests
-->The patient calls the selectTests function in the Health_Contract, passing the selected tests and payment amount.
-->The contract stores the test selections in a mapping and logs the patient's details.
+### 1. Patient Selects Tests and Pays
 
-2. Doctor Uploads Test Results
+#### Payment Options
+- **On the Same Chain**: If the patient and doctor are on the same chain (e.g., Avalanche), the patient pays for the tests directly to the Health_Contract using USDC.
+- **Cross-Chain via CCIP**: If the patient is on a different chain, they can still pay using USDC via Chainlink's Cross-Chain Interoperability Protocol (CCIP). This involves transferring data along with the tokens, where the data includes a function selector and its arguments.
 
-Data Storage on IPFS:
-->The doctor performs the tests and uploads the results to IPFS, ensuring the data is decentralized and securely stored.
-Function: updatePatientHealthScore
-->The doctor then calls updatePatientHealthScore in the Health_Contract. This function sends a request to Chainlink's Off- 
-  Chain Computation (Functions) to process the patient's data.
-->The off-chain function retrieves the patient's data from IPFS, calculates the health score, determines the number of 
-  health tokens to be awarded, and updates the patient's NFT with a new URI reflecting the updated score.
+#### Function: `selectTests`
+- The patient calls the `selectTests` function in the `Health_Contract`, passing the selected tests and payment amount.
+- The contract stores the test selections in a mapping and logs the patient's details.
+
+### 2. Doctor Uploads Test Results
+
+#### Data Storage on IPFS
+- The doctor performs the tests and uploads the results to IPFS, ensuring the data is decentralized and securely stored.
+
+#### Function: `updatePatientHealthScore`
+- The doctor then calls `updatePatientHealthScore` in the `Health_Contract`. This function sends a request to Chainlink's Off-Chain Computation (Functions) to process the patient's data.
+- The off-chain function retrieves the patient's data from IPFS, calculates the health score, determines the number of health tokens to be awarded, and updates the patient's NFT with a new URI reflecting the updated score.
+
+### 3. Chainlink Off-Chain Computation
+
+#### Data Processing
+- Chainlink’s Off-Chain Computation fetches the patient's data from IPFS via an API.
+- It calculates the patient's health score and the number of tokens to award based on the test results.
+- It updates the patient’s NFT data, including generating a new URI.
+
+#### Function Response
+- The off-chain function returns three values to the `Health_Contract`: `tokensToProvide`, `newUri`, and `healthScore`.
+
+### 4. Updating the Blockchain
+
+#### Callback: `fulfillRequest`
+- The `Health_Contract` receives the response through the `fulfillRequest` callback function.
+- The contract uses Chainlink’s log-triggered automation to handle the function call due to gas limitations.
+
+#### Function: `performUpkeep`
+- This function is triggered automatically by Chainlink Automation once the response is logged.
+- It mints a new NFT for the patient if they don't already have one or updates the existing NFT's URI with the new data.
+- It mints health tokens to the patient's address based on their updated score.
+- The USDC in the contract is transferred to the doctor.
+
+### 5. Patient Profile and Rewards
+
+#### Patient Profile
+- Patients can view their NFTs on their profile page, displaying their health score and available tokens.
+- The NFTs are dynamic, updating with each new test result and score.
+
+#### Claiming Rewards
+- Patients can claim reward NFTs like `HealthInsuranceNFT`, `FreeHealthKitNFT`, and `FreeHealthCheckupNFT` if they have enough health tokens.
+- The claim process involves transferring the required tokens to the doctor and updating the patient’s NFT to reflect the new balance.
 
   
 ![alt text](image-1.png)
 
 
-**Backend**
+## Backend
 
-Found here: https://github.com/TeamMaverick5/Medibyte/tree/main/ipfs-api
+### Smart Contracts
+- **Solidity**: Programming language used to write smart contracts.
+- **Avalanche Fuji Testnet**: Deployment environment for all smart contracts.
+- **Sepolia Testnet**: Utilized for CCIP transactions.
 
-The backend infrastructure is built with MongoDB and Node.js, noting that data is decentralised via the IPFS gateway. 
+### Chainlink Services
+- **Cross-Chain Interoperability Protocol (CCIP)**: Used for cross-chain transactions, enabling users from different chains to interact with the Medibyte platform.
+- **Off-Chain Computation**: Leveraged to process complex computations off-chain, such as calculating health scores based on patient data fetched from IPFS.
+- **Chainlink Automation**: Employed for log-triggered automation, enabling efficient handling of function calls and responses.
 
-An offchain function was also used to save gas. As outlined above, Medibyte uses an offchain function to:
-1. calculate the patient score; * 
-2. update the corresponding NFT held by a patient;
-3. send an updated score alongside other attributes (e.g. number of Medicoins) to the user; and 
-4. simultaneously: a) return a URI to the Medibytes team to outline the amount of tokens to be issued to the patient and, b) return the URI of patient nft to the smart contract handling the core logic (Health_Contract).   
+### IPFS (InterPlanetary File System)
+- **Decentralized Data Storage**: Test results and patient data are securely stored on IPFS, ensuring data integrity and accessibility.
 
-The above is made possible because once a patient initially registers, the API sets the NFT data which stores the unique URI where NFT data is stored on IPFS. 
+### Summary
+The backend of Medibyte relies on a combination of smart contracts written in Solidity, Chainlink services for off-chain computations and automation, and IPFS for decentralized data storage. Smart contracts are deployed on Avalanche Fuji Testnet, with Sepolia Testnet utilized for CCIP transactions. This backend architecture ensures the reliability, security, and interoperability of the Medibyte platform.
 
-**to calculate a patient score the deployed smart contracts are fetching data from the same API and applying our calculation logic on that data.*
 
-**Frontend**
+## Frontend
 
-Found here: https://github.com/TeamMaverick5/Medibyte/tree/main/client
+### Technologies Used
 
-The frontend uses React and  Vite to provide a minimal setup to get React working in Vite with HMR and some ESLint rules. Together, these tools provide users with a minimalist and modern interface for frictionless interaction with the backend.
+#### Frameworks and Libraries
+- **React.js**: JavaScript library for building user interfaces.
+- **Tailwind CSS**: Utility-first CSS framework for styling.
+- **React Parallax**: Used for adding parallax effects to enhance the user experience.
 
-To also ensure seamless use of the Medibytes platform, the Medibytes team has also integrated Chainlink’s Cross-Chain Interoperability Protocol (CCIP) for patients to use other networks. This is made possible by the use of a receiver and sender contracts. Put simply, the receiver contract is deployed on the doctor's network and sender contract is deployed on the patient's network. What this practically means is that patients are able to easily pay for medical tests in USDC from their respective network or better yet, receive rewards directly to their connected wallet.  
+#### Build Tools
+- **Vite**: Fast, modern build tool for frontend development.
 
-**Summary**
+#### HTTP Client
+- **Axios**: JavaScript library for making HTTP requests.
 
-When using Medibyte, health records are stored via offchain services and subsequently decentralised via the IPFS gateway to ensure the data is both immutable and secure. This evidences the ability for health records to be truly owned and easily accessed by individuals to yield a net positive to society. This project also demonstrates the potential to reward users via tokens linked to real world outcomes. Changing and storing medical data is very easy, provided health professionals will enter the data on a client's behalf and it is displayed in real time to the client. This means all the user has to do is log on, look at the records and focus on building a healthier lifestyle. Our features tab has a limited list of services you can see for yourself. 
+### Summary
+The frontend of Medibyte is built using modern web technologies to deliver an intuitive and engaging user experience. React.js is used for building dynamic UI components, while Tailwind CSS provides a sleek and responsive design. React Parallax adds immersive effects to enhance user interaction. Vite is employed as a fast build tool for efficient development workflows. Axios handles HTTP requests, enabling seamless communication with backend services. Together, these technologies create a visually appealing and user-friendly frontend for the Medibyte platform.
+ 
+
+## Summary
+
+Medibyte is a revolutionary health incentive platform that leverages blockchain technology to reward patients for their health improvements. Built on a foundation of smart contracts, decentralized data storage, and Chainlink services, Medibyte offers a transparent, secure, and interoperable solution for incentivizing better health outcomes.
+
+### Key Features
+
+- **Patient-Driven Testing**: Patients can select tests and pay using USDC, with options for both same-chain and cross-chain transactions.
+- **Off-Chain Computation**: Complex health score calculations are performed off-chain using Chainlink's Off-Chain Computation service, ensuring efficiency and scalability.
+- **Dynamic NFTs**: Patients receive dynamic NFTs that reflect their health score and available tokens, providing a visual representation of their progress.
+- **Reward System**: Patients can claim reward NFTs for achieving certain health milestones, fostering motivation and engagement.
+- **Seamless Integration**: Medibyte seamlessly integrates frontend and backend technologies, including React.js, Tailwind CSS, Vite, Axios, and Chainlink services, to deliver a smooth and immersive user experience.
+
+### Next Steps
+- **Expansion**: Medibyte plans to expand its services and reach more patients and healthcare providers.
+- **Enhancements**: Continuous improvements and feature enhancements based on user feedback and technological advancements.
+- **Community Engagement**: Building a vibrant community of users, developers, and stakeholders to contribute to the growth and evolution of the platform.
+
+Medibyte is not just a healthcare solution; it's a catalyst for positive change, empowering individuals to take control of their health and well-being while fostering collaboration and innovation in the healthcare industry.
+
 
 
 **Challenges we ran into**
 
-Aside from the conceptual design of the project, we also ran into the logistical issue of communicating from different time difference. Another challenge was the actual encryption of user data. Initially we had a centralised database that we were unsure how to integrate into the Web3 space but ultimately resolved this by looking to the IPFS gateway. 
+During the development of Medibyte, we encountered several significant challenges, each requiring dedicated effort and problem-solving:
 
-**Accomplishments**
+1. Integration of Offchain Computation: Implementing the offchain computation function posed a major challenge. Despite utilizing the function playground provided by Chainlink, integrating it with our health contract proved difficult. Resolving compatibility issues and ensuring seamless integration demanded extensive troubleshooting and consumed considerable time and effort.
 
-We are proud of finishing the project on time which seemed almost unlikely due to some bugs we ran into across our journey. 
+2. Integration of CCIP: Integrating the Cross-Chain Interoperability Protocol (CCIP) presented another hurdle. This involved facilitating fee transfers between different blockchain networks and transmitting data alongside USDC payments. Overcoming the complexities of cross-chain transactions required meticulous planning and thorough testing to ensure smooth functionality.
 
-But overall, we are incredibly proud of Medibyte due to its potential to bring efficiencies into the healthcare industry. The collaborative effort, overcoming technical challenges, and delivering a functional product within a limited time frame showcased our team's dedication, technical skills, and creativity. This accomplishment not only reflects our budding passion but also our commitment to creating impactful technology, especially at our level of experience in using Web3 technology.
+3. Integration of Log Triggered Function: Implementing the log triggered function posed its own set of challenges. Initially, we attempted to incorporate the Upkeep function's code within the callback function _fulfillRequest_. However, due to limitations on gas consumption, this approach proved impractical. Subsequently, we transitioned to a log-based triggered function, which necessitated adjustments to our implementation strategy and codebase.
+
+Navigating these challenges demanded perseverance, collaboration, and innovative problem-solving, ultimately contributing to the robustness and resilience of the Medibyte platform.
+
+
+## Accomplishments
+
+- Successful integration of beautiful frontend with backend, achieving seamless interaction and user experience.
+- Overcoming challenges such as integrating off-chain computation and CCIP transactions, demonstrating resilience and problem-solving skills.
+- Utilizing Chainlink's products effectively to enhance platform functionality and reliability.
+
 
 **What we learnt**
 
-In terms of technical skills, we deepened our understanding of Solidity for writing secure and efficient smart contracts. We also made sure to learn more about Chainlink CCIP. Specifically, we learnt how to use Chainlink’s CCIP to facilitate secure payments and interactions across different blockchain networks. We also learnt about the benefits of decentralised storage by gaining practical experience with the IPFS for decentralised storage, ensuring data integrity and accessibility in a distributed environment.
+## What We Learned
 
-At a minimum, we enhanced our ability to ask intelligent questions to the Chainlink dev team and utilised Stack Overflow when running into technical issues during the hackathon. We also learnt that communication with team members meant deadlines were readily achievable and a seemingly impossible task became manageable with teamwork.
+- **Connecting Frontend with Blockchain**: Gained expertise in integrating frontend technologies with blockchain smart contracts to create a cohesive user experience.
+- **Writing Efficient Smart Contracts**: Developed proficiency in writing optimized and secure smart contracts using Solidity.
+- **Utilizing Chainlink's Products**: Learned how to leverage Chainlink's services such as CCIP, off-chain computation, and automation to enhance platform functionality.
+- **Integration of Contracts**: Mastered the integration of multiple smart contracts and external services to create a comprehensive platform architecture.
+- **Teamwork**: Enhanced collaboration and communication skills through effective teamwork and problem-solving.
 
+---
