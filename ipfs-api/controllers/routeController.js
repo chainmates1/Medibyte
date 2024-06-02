@@ -30,7 +30,7 @@ export const setTestData = async (req, res) => {
   if (!testData) {
     return res.status(400).json({ message: 'Test Data is Required!' });
   }
-  // console.log(data);
+  // console.log(testData);
   try {
     let result = await uploadFile(testData);
     if (typeof result === 'undefined') {

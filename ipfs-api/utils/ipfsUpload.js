@@ -1,32 +1,30 @@
-import fetch from 'node-fetch';
+// import fetch from 'node-fetch';
+import axios from 'axios';
 import { createFormData } from './fileUtils.js';
 import dotenv from 'dotenv';
 dotenv.config();
 
 export const uploadFile = async (jsonData) => {
-  // Api key and URI
-  const apiKey = process.env.API_KEY;
-  const url = process.env.QUICK_NODE_URI;
-
-  // Set headers
-  const headers = {
-    'x-api-key': apiKey,
-  };
-  // Request options
-  const requestOptions = {
-      method: 'POST',
-      headers,
-      body: await createFormData(jsonData),
-      redirect: 'follow',
-  };
+  // JWT and URI;
+  const JWT = process.env.JWT;
+  const url = process.env.URI;
 
   let cid;
   // Make the request
   try {
-    const options =  requestOptions;
-    const response = await fetch(url, options);
-    const result = await response.json();
-    cid = result.pin.cid;
+    const formData = await createFormData(jsonData);
+    console.log(formData);
+    const response = await axios.post(
+      url,
+      formData,
+      {
+        headers: {
+          Authorization: `Bearer ${JWT}`,
+        },
+      }
+    );
+    console.log(response.data);
+    cid = response.data.IpfsHash;
     // console.log(cid);
   } catch (error) {
     console.error('Error:', error);
