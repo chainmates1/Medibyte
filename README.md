@@ -65,14 +65,14 @@ Once the server starts, you will see an output similar to:
 
 VITE v5.2.0  ready in 123 ms
 
-  ➜  Local:   http://localhost:3000/
+  ➜  Local:   http://localhost:5173/
   ➜  Network: use --host to expose
   ➜  press h to show help
 
 
 ### Step 8: View the Project
 
-Open your web browser and navigate to http://localhost:3000/. You should now see the Medibyte prototype running locally on your machine.
+Open your web browser and navigate to http://localhost:5173/. You should now see the Medibyte prototype running locally on your machine.
 
 ## Additional Scripts
 
