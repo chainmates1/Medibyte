@@ -1,4 +1,4 @@
-# Medibyte Prototype: Setup and Installation Guide
+# Medibyte: Setup and Installation Guide
 
 Welcome to the Medibyte prototype project! This guide will help you set up and install the project locally on your system. Please follow the steps below carefully to get started.
 
