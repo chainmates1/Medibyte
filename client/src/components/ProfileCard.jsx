@@ -9,7 +9,7 @@ const getNFTId = async (provider, walletAddress) => {
   const contract = new ethers.Contract(PatientNFT_ADDRESS, patAbi, provider);
   // const tid = await contract.getTokenIdByPatient(walletAddress);
   const result = await contract.getTokenIdByPatient(walletAddress);
-  console.log(walletAddress);
+  // console.log(walletAddress);
   return Number(result);
 };
 

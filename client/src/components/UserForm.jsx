@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from "react";
 import { useUser } from "../UserContext";
 import { ethers } from "ethers";
-import usdcAbi from "../abis/USDCABI.json"
-import abi from "../abis/Health_Contract.json"
+import usdcAbi from "../abis/USDCABI.json";
+import abi from "../abis/Health_Contract.json";
 
 const UserForm = () => {
   const provider = new ethers.BrowserProvider(window.ethereum);
   const [showDescriptions, setShowDescriptions] = useState([]);
   const [selectedTests, setSelectedTests] = useState([]);
   const [chainId, setChainId] = useState(null);
-  
+
   const tests = [
-    { id: 1, name: "Haemoglobin Test", description: "Test Haemoglobin in your blood. Price: 0.5 USD", price: ethers.parseUnits("0.5", 18) },
-    { id: 2, name: "Blood Sugar Test", description: "Test your Blood Sugar . Price: 0.75 USD", price: ethers.parseUnits("0.75", 18) },
-    { id: 3, name: "Blood Uria Test", description: "Test the Uria content in your blood. Price: 1.25 USD", price: ethers.parseUnits("1.25", 18) },
-    { id: 4, name: "Serum Bilirubin Test", description: "Test Serum Bilirubin in your blood. Price: 2.0 USD", price: ethers.parseUnits("2.0", 18) },
-    { id: 5, name: "HDL Cholestrol Test", description: "Test your HDL Cholestrol. Price: 1.75 USD", price: ethers.parseUnits("1.75", 18) },
-    { id: 6, name: "FDL Cholestrol Test", description: "Test your FDL Cholestrol. Price: 2 USD", price: ethers.parseUnits("2", 18) }
+    { id: 0, name: "Haemoglobin Test", description: "Test Haemoglobin in your blood. Price: 0.5 USD", price: ethers.parseUnits("0.5", 6) },
+    { id: 1, name: "Blood Sugar Test", description: "Test your Blood Sugar . Price: 0.75 USD", price: ethers.parseUnits("0.75", 6)},
+    { id: 2, name: "Blood Uria Test", description: "Test the Uria content in your blood. Price: 1.25 USD", price: ethers.parseUnits("1.25", 6) },
+    { id: 3, name: "Serum Bilirubin Test", description: "Test Serum Bilirubin in your blood. Price: 2.0 USD", price: ethers.parseUnits("2.0", 6) },
+    { id: 4, name: "HDL Cholestrol Test", description: "Test your HDL Cholestrol. Price: 1.75 USD", price: ethers.parseUnits("1.75", 6) },
+    { id: 5, name: "FDL Cholestrol Test", description: "Test your FDL Cholestrol. Price: 2 USD", price: ethers.parseUnits("2", 6) }
   ];
 
   useEffect(() => {
@@ -24,10 +24,11 @@ const UserForm = () => {
       if (provider) {
         const network = await provider.getNetwork();
         setChainId(network.chainId);
+        console.log(Number(network.chainId));
       }
     };
     fetchChainId();
-  }, [provider]);
+  }, []);
 
   const toggleDescription = (id) => {
     if (showDescriptions.includes(id)) {
@@ -46,32 +47,48 @@ const UserForm = () => {
   };
 
   const handleSubmit = async (event) => {
+    event.preventDefault();
     const provider = new ethers.BrowserProvider(window.ethereum);
     const signer = await provider.getSigner();
+    console.log(signer);
     const contractAddress = import.meta.env.VITE_HEALTH_CONTRACT;
+    // console.log(contractAddress);
     const contractABI = abi;
     const contract = new ethers.Contract(contractAddress, contractABI, signer);
-    event.preventDefault();
+    // event.preventDefault();
+    // console.log(contract);
     if (!contract) {
       alert("Smart contract is not loaded.");
       return;
     }
-    const DESTINATION_CHAIN_ID = "14767482510784806043";
+    const DESTINATION_CHAIN_ID = "43113";
     const selectedTestPrices = selectedTests.map(testId => tests.find(test => test.id === testId).price);
-    const totalPrice = selectedTestPrices.reduce((total, price) => total.add(price), ethers.BigNumber.from(0));
+    console.log(selectedTestPrices);
+    
+    // const totalPrice = selectedTestPrices.reduce((total, price) => total.add(price), ethers.BigNumber.from(0));
+    let totalPrice = 0;
+    for(let i = 0;i < selectedTestPrices.length;i++){
+      totalPrice += Number(selectedTestPrices[i])
+    }
+
+    console.log(totalPrice);
     const USDC_CONTRACT_ADDRESS = import.meta.env.VITE_USDC;
+
+  
     try {
       const usdcContract = new ethers.Contract(
         USDC_CONTRACT_ADDRESS, 
         usdcAbi, 
-        provider.getSigner()
+        await provider.getSigner()
       );
 
-      if (chainId === DESTINATION_CHAIN_ID) { 
-        const approveTx = await usdcContract.approve(contract.address, totalPrice);
+      if (chainId === DESTINATION_CHAIN_ID || true) { 
+        const approveTx = await usdcContract.approve(contractAddress, (totalPrice));
+        console.log(totalPrice);
         await approveTx.wait();
-        const tx = await contract.selectTests(selectedTests);
+        const tx = await contract.selectTests(signer.address, selectedTests, (totalPrice));
         await tx.wait();
+        
         alert("Tests selected successfully!");
       } else {
         const USDC_CONTRACT_ADDRESS1 = "0x1c7D4B196Cb0C7B01d743Fbc6116a902379C7238";

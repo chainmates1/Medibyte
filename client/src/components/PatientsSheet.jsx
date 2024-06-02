@@ -7,8 +7,9 @@ const PatientsSheet = () => {
   const [patients, setPatients] = useState([]);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const navigate = useNavigate();
-  let contract; 
-  const authorizedAddress = import.meta.env.VITE_DOCTOR;
+  const authorizedAddress = import.meta.env.VITE_DOCTOR.toLowerCase();
+  const contractAddress = import.meta.env.VITE_HEALTH_CONTRACT;
+  const contractABI = abi;
 
   useEffect(() => {
     const checkAuthorization = async () => {
@@ -21,12 +22,15 @@ const PatientsSheet = () => {
 
         const provider = new ethers.BrowserProvider(window.ethereum);
         await provider.send("eth_requestAccounts", []);
-        const add = await provider.getSigner();
-        const userAddress = add.address;
-        console.log(userAddress);
-        if (userAddress.toLowerCase() === authorizedAddress.toLowerCase()) {
+        const signer = await provider.getSigner();
+        const userAddress = await signer.getAddress();
+
+        // console.log('User Address:', userAddress);
+        // console.log('Authorized Address:', authorizedAddress);
+
+        if (userAddress.toLowerCase() === authorizedAddress) {
           setIsAuthorized(true);
-          fetchPatients();
+          fetchPatients(signer);
         } else {
           setIsAuthorized(false);
         }
@@ -35,16 +39,17 @@ const PatientsSheet = () => {
       }
     };
 
-    const fetchPatients = async () => {
+    const fetchPatients = async (signer) => {
       try {
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const contractAddress = import.meta.env.VITE_HEALTH_CONTRACT;
-        const contractABI = abi;
-        contract = new ethers.Contract(contractAddress, contractABI, provider);
-
+        const contract = new ethers.Contract(contractAddress, contractABI, signer);
+        console.log("Health Contract is working at address: ",contract.target);
+        // console.log(selectedTests);
         contract.on('TestsSelected', (patientAddress, selectedTests) => {
+          console.log('Event received:', patientAddress, selectedTests);
           setPatients(prevPatients => [...prevPatients, { address: patientAddress, selectedTests }]);
         });
+        console.log('Contract event listener set up');
+        console.log(patients);
       } catch (error) {
         console.error('Error fetching patients:', error);
       }
@@ -53,11 +58,14 @@ const PatientsSheet = () => {
     checkAuthorization();
 
     return () => {
-      if (window.ethereum && contract) {
+      if (window.ethereum) {
+        const provider = new ethers.BrowserProvider(window.ethereum);
+        const signer = provider.getSigner();
+        const contract = new ethers.Contract(contractAddress, contractABI, signer);
         contract.removeAllListeners('TestsSelected');
       }
     };
-  }, []);
+  }, [authorizedAddress, contractABI, contractAddress]);
 
   const handleRowClick = (address, selectedTests) => {
     navigate(`/patient/${address}`, { state: { selectedTests } });

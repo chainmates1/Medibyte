@@ -10,7 +10,7 @@ const DoctorProfile = () => {
       <br />
       <br />
       <br />
-      <PatientsSheet />
+      <PatientsSheet/>
     </div>
   );
 };

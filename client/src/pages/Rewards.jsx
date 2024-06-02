@@ -11,7 +11,7 @@ import insuranceabi from "../abis/HealthInsuranceNFT.json";
 
 const Rewards = () => {
     const location = useLocation();
-    const { tokens, score, id } = location.state || { tokens: 0, score: 0, id: 0 };
+    const { tokens, score, id } = location.state || { tokens: "0", score: 0, id: 0 };
     const [rewardAvailability, setRewardAvailability] = useState({
         HealthCheckup: 0,
         HealthKit: 0,
@@ -24,7 +24,7 @@ const Rewards = () => {
 
             const provider = new ethers.BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
-            const signerAddress = await signer.getAddress();
+            const signerAddress = signer.getAddress();
             const checkup_address = import.meta.env.VITE_CHECKUP;
             const kit_address = import.meta.env.VITE_KIT;
             const Insurance_address = import.meta.env.VITE_INSURANCE;
@@ -71,10 +71,10 @@ const Rewards = () => {
         try {
             if (!window.ethereum) throw new Error("No crypto wallet found");
 
-            await window.ethereum.send("eth_requestAccounts");
+            await window.ethereum.request({ method: "eth_requestAccounts" });
             const provider = new ethers.BrowserProvider(window.ethereum);
             const signer = await provider.getSigner();
-            const account = await signer.getAddress();
+            const account = signer.getAddress();
             const HEALTH_address = import.meta.env.VITE_HEALTH_CONTRACT;
             const PatientNFT_ADDRESS = import.meta.env.VITE_PATIENTNFT;
             const Medicoin_ADDRESS = import.meta.env.VITE_MEDICOIN;
@@ -82,11 +82,13 @@ const Rewards = () => {
             const medicoin = new ethers.Contract(Medicoin_ADDRESS, mediabi, signer);
             const patientNFTContract = new ethers.Contract(PatientNFT_ADDRESS, patientNFTAbi, signer);
 
-            // Check user balance
-            const balance = ethers.parseUnits(tokens.toString(), 18);
+            // Convert tokens to a number, defaulting to 0 if it's "-"
+            const tokenAmount = tokens === "-" ? "0" : tokens;
+            console.log(tokenAmount);
+            const balance = ethers.parseUnits(tokenAmount.toString(), 18);
             const rewardPrice = ethers.parseUnits(rewardContracts[rewardKey].price.toString(), 18);
 
-            if (balance.lt(rewardPrice)) {
+            if (balance > rewardPrice) {
                 throw new Error("Insufficient token balance");
             }
 
@@ -167,7 +169,7 @@ const Rewards = () => {
                         <h2 className="h2 mb-4 text-center text-stroke-1">{key.replace(/NFT$/, "")}</h2>
                         <p className="body-1 text-center text-stroke-1">Available: {available}</p>
                         <p className="body-1 text-center text-stroke-1">Price: {price} Health Tokens</p>
-                        <button className="button bg-color-1 text-n-1 mt-5 py-2 px-4 rounded w-full" onClick={claimReward}>Claim</button>
+                        <button className="button bg-color-1 text-n-1 mt-5 py-2 px-4 rounded w-full" onClick={() => claimReward(key)}>Claim</button>
                     </div>
                 ))}
             </div>
