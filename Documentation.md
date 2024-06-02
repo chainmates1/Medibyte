@@ -104,6 +104,18 @@ Medibyte is a web3-based health incentive platform that integrates blockchain te
 ### IPFS (InterPlanetary File System)
 - **Decentralized Data Storage**: Test results and patient data are securely stored on IPFS, ensuring data integrity and accessibility.
 
+### Find The Deployed Contracts Here:
+
+- **FreeHealthCheckupNFT.sol**:0xAACE72Ea5C362a7865D5fce91283cA09711e1307
+- **FreeHealthKitNFT.sol**:0x0aE3314a123A650439444a378440C5f5aE6E2495
+- **HealthInsuranceNFT.sol**:0x7AB3b768CA87966Be8733bEc283f8bA81f85d119
+- **Health_Contract.sol**:0xBB9B0b1D6B288c27FE6A5CD0973db141808e91a3
+- **MediCoin.sol**:0xdeBC2C24cBDF8482bCDe2F926fDC13DA89B45815
+- **PatientNFT.sol**:0x009bBEB7f05FdeCE2944b1273d4e99e029EFf9B0
+- **Sender.sol**:0xc49996BaDDf99099143EDD2417e9A4B172233368
+- **Receiver.sol**:0x381c0CFe1A6EF9C47C06495B87F3866eFC5247Ab
+
+
 ### Summary
 The backend of Medibyte relies on a combination of smart contracts written in Solidity, Chainlink services for off-chain computations and automation, and IPFS for decentralized data storage. Smart contracts are deployed on Avalanche Fuji Testnet, with Sepolia Testnet utilized for CCIP transactions. This backend architecture ensures the reliability, security, and interoperability of the Medibyte platform.
 
