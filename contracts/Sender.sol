@@ -118,7 +118,6 @@ contract Sender is OwnerIsCreator {
         uint256 _amount
     )
         external
-        onlyOwner
         validateDestinationChain(_destinationChainSelector)
         returns (bytes32 messageId)
     {

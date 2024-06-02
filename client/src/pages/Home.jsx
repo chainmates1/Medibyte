@@ -5,6 +5,7 @@ import Hero from "../components/Hero";
 import Collaboration from "../components/Collaboration";
 import Footer from "../components/Footer";
 
+
 const Home = () => {
   return (
     <>
