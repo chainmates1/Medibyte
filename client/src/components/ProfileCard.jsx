@@ -14,8 +14,19 @@ const getNFTId = async (provider, walletAddress) => {
 };
 
 const fetchNFTDataFromOpenSea = async (tokenId) => {
-  const response = await fetch(`https://api.opensea.io/api/v1/asset/${PatientNFT_ADDRESS}/${tokenId}/`);
-  const data = await response.json();
+"  https://testnets-api.opensea.io/api/v2/chain/avalanche_fuji/contract/0x009bBEB7f05FdeCE2944b1273d4e99e029EFf9B0/nfts/1"
+  const response = await fetch(`https://testnets-api.opensea.io/api/v2/chain/avalanche_fuji/contract/${PatientNFT_ADDRESS}/nfts/${tokenId}`);
+  const result = await response.json();
+  console.log(result);
+  const data = {
+    image_url: result.nft.image_url,
+    image_preview_url: result.nft.image_url,
+    attributes: [
+      { trait_type: 'Tokens', value:  result.nft.traits.find(attr => attr.trait_type === 'Tokens').value },
+      { trait_type: 'Score', value: result.nft.traits.find(attr => attr.trait_type === 'Score').value },
+    ],
+    name: result.nft.name,
+  }
   return data;
 };
 
@@ -49,7 +60,9 @@ const ProfileCard = () => {
             setLoading(false);
             return;
           }
+          console.log(tokenId);
           const nftData = await fetchNFTDataFromOpenSea(tokenId);
+          // console.log(nftData);
           setNftData(nftData);
         } else {
           alert("MetaMask extension not detected. Please install MetaMask.")
@@ -68,7 +81,8 @@ const ProfileCard = () => {
       state: {
         tokens: nftData.attributes.find(attr => attr.trait_type === 'Tokens').value,
         score: nftData.attributes.find(attr => attr.trait_type === 'Score').value,
-        id: TokenId
+        id: TokenId,
+        image_url: nftData.image_url
       }
     });
   }

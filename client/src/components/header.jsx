@@ -8,6 +8,7 @@ import { useState, useEffect } from "react";
 import { ethers } from "ethers";
 import HealthContract from "../abis/Health_Contract.json";
 import { useUser } from "../UserContext";
+import {sourcecd} from "../assets/srccode";
 
 const Header = () => {
   const pathname = useLocation();

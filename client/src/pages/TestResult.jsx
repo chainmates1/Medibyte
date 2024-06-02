@@ -4,15 +4,14 @@ import axios from 'axios';
 import { ethers } from 'ethers';
 import abi from "../abis/Health_Contract.json";
 import Header from '../components/header';
-import fs from 'fs';
-
+import {sourcecd} from "../assets/srccode";
 
 const TestResult = () => {
   const { address } = useParams();
   const location = useLocation();
   const { selectedTests } = location.state || {};
   const [testResults, setTestResults] = useState(Array(10).fill(0)); // Ensure testResults is always an array
-  const testValues = [0.5, 0.75, 1.25, 2.0, 1.75, 2.0]; // Array of test values
+  const testValues = [1, 1, 1, 2, 2, 3]; // Array of test values
 
   useEffect(() => {
     // Initialize testResults with zeros for selected tests
@@ -33,16 +32,14 @@ const TestResult = () => {
 
     try {
       // Sending test results to the API
-      await axios.post('https://test-api-production-678d.up.railway.app/setTestData', { data: testResults });
-      console.log("hi1");
+      var response = await axios.post('https://test-api-production-678d.up.railway.app/setTestData', { data: testResults });
+      console.log(response.data);
 
       // Calculate amountPaid based on selected tests
       const amountPaid = selectedTests.reduce((sum, testIndex) => sum + testValues[testIndex], 0);
-
+      // console.log(sourcecd);
       // Dummy parameters for the contract function call
-      const source = fs
-      .readFileSync(path.resolve(__dirname, "../assets/srccode.js"))
-      .toString(); // Replace with actual source if needed
+      const source = sourcecd;
       const encryptedSecretsUrls = "0x"; // Dummy encrypted secrets
       const donHostedSecretsSlotID = 0;
       const donHostedSecretsVersion = 0;
@@ -52,11 +49,11 @@ const TestResult = () => {
 
       // Interacting with the smart contract
       const provider = new ethers.BrowserProvider(window.ethereum);
-      const signer = provider.getSigner();
+      const signer = await provider.getSigner();
       const contractAddress = import.meta.env.VITE_HEALTH_CONTRACT;
       const contractABI = abi;
       const contract = new ethers.Contract(contractAddress, contractABI, signer);
-
+      // console.log(amountPaid)
       await contract.updatePatientHealthScore(
         source,
         encryptedSecretsUrls,
@@ -66,7 +63,7 @@ const TestResult = () => {
         gasLimit,
         donID,
         address,
-        ethers.utils.parseUnits(amountPaid.toString(), 18) // Ensure the amount is in the correct unit
+        amountPaid// Ensure the amount is in the correct unit
       );
 
       alert('Test results submitted successfully and contract function called.');

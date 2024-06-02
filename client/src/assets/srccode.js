@@ -1,4 +1,4 @@
-const ethers = await import('npm:ethers@6.10.0');
+export const sourcecd= `const ethers = await import('npm:ethers@6.10.0');
 const apiUrlPatientData = 'https://test-api-production-678d.up.railway.app/getTestData';
 const apiResponse = await Functions.makeHttpRequest({
     url: apiUrlPatientData
@@ -111,4 +111,4 @@ const encoded = abiCoder.encode(
     ['uint256', 'uint256', 'string'],
     [patientScore, tokensToProvide, data.uri]
 );
-return ethers.getBytes(encoded);
+return ethers.getBytes(encoded);`;

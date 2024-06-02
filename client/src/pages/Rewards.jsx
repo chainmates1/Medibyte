@@ -11,7 +11,7 @@ import insuranceabi from "../abis/HealthInsuranceNFT.json";
 
 const Rewards = () => {
     const location = useLocation();
-    const { tokens, score, id } = location.state;
+    const { tokens, score, id, image_url } = location.state;
     const [rewardAvailability, setRewardAvailability] = useState({
         HealthCheckup: 0,
         HealthKit: 0,
@@ -47,21 +47,21 @@ const Rewards = () => {
     }, []);
 
     const rewardContracts = {
-        HealthCheckup: {
-            address: import.meta.env.VITE_CHECKUP,
-            price: 10,
-            image: 'https://gateway.pinata.cloud/ipfs/Qmdree1mCWqrAvAa8gjYzCQAEGyQVj4imJ6ZVefJ6q9bYd',
-            available: rewardAvailability.HealthCheckup
-        },
         HealthKit: {
             address: import.meta.env.VITE_KIT,
             price: 20,
             image: 'https://gateway.pinata.cloud/ipfs/QmegqDLxYX1zHAx1DBSw4SA2v9ymzczXE1qgKDSoPy2Jgp',
             available: rewardAvailability.HealthKit
         },
+        HealthCheckup: {
+            address: import.meta.env.VITE_CHECKUP,
+            price: 50,
+            image: 'https://gateway.pinata.cloud/ipfs/Qmdree1mCWqrAvAa8gjYzCQAEGyQVj4imJ6ZVefJ6q9bYd',
+            available: rewardAvailability.HealthCheckup
+        },
         HealthInsurance: {
             address: import.meta.env.VITE_INSURANCE,
-            price: 30,
+            price: 100,
             image: 'https://gateway.pinata.cloud/ipfs/QmbovfLDsr7JYTaCN1FJYugbfGq5KUkmtyPhYAEiEkbkJg',
             available: rewardAvailability.HealthInsurance
         },
@@ -88,28 +88,29 @@ const Rewards = () => {
             console.log(tokenAmount);
             const balance = ethers.parseUnits(tokenAmount.toString(), 18);
             const rewardPrice = ethers.parseUnits(rewardContracts[rewardKey].price.toString(), 18);
-
+            console.log(balance);
+            console.log(rewardPrice);
             if (balance < rewardPrice) {
                 alert("Insufficient token balance");
                 throw new Error("Insufficient token balance");
             }
 
-            // Approve tokens
-            const approveTx = await medicoin.approve(HEALTH_address, rewardPrice);
+            // // Approve tokens
+            const approveTx = await medicoin.approve(HEALTH_address, rewardContracts[rewardKey].price);
             await approveTx.wait();
 
-            // Claim reward
+            // // Claim reward
             const claimTx = await contract.claimReward(rewardContracts[rewardKey].address);
             await claimTx.wait();
 
             console.log("Reward claimed successfully!");
 
             // Update NFT data
-            const updatedTokens = balance.sub(rewardPrice);
+            const updatedTokens = balance - rewardPrice;
             const updatedNftData = {
-                description: "this is here",
-                image: "xyz.com",
-                name: "hemlo",
+                description: "PatientNFT! Shows your Token Score",
+                image: image_url,
+                name: "PatientNFT",
                 attributes: [
                     {
                         trait_type: "Score",
@@ -117,7 +118,7 @@ const Rewards = () => {
                     },
                     {
                         trait_type: "Tokens",
-                        value: updatedTokens.toString()
+                        value: Nu(updatedTokens)
                     },
                     {
                         trait_type: "Address",
@@ -127,7 +128,7 @@ const Rewards = () => {
             };
 
             // Send updated data to the API
-            const response = await fetch('/setNftData', {
+            const response = await fetch('https://test-api-production-678d.up.railway.app/setNftData', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -139,12 +140,14 @@ const Rewards = () => {
                 throw new Error("Failed to update NFT data");
             }
 
-            const { uri } = await response.json(); // Assuming the API response contains the new URI
+            const result = await response.json(); // Assuming the API response contains the new URI
+            console.log(result.uri);
             const privateKey = import.meta.env.VITE_PRIVATE_KEY;
-            const adminWallet = new ethers.Wallet(privateKey, provider);
-
+            const provider2 = new ethers.JsonRpcProvider(import.meta.env.VITE_RPC_URL)
+            const adminWallet = new ethers.Wallet(privateKey, provider2);
+            // console.log(adminWallet);
             // Call setTokenURI function on the PatientNFT contract
-            const setTokenUriTx = await patientNFTContract.connect(adminWallet).setTokenURI(id, uri);
+            const setTokenUriTx = await patientNFTContract.connect(adminWallet).setTokenURI(id, result.uri);
             await setTokenUriTx.wait();
 
             console.log("NFT URI updated successfully");

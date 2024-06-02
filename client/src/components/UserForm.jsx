@@ -12,12 +12,12 @@ const UserForm = () => {
   const [chainId, setChainId] = useState(null);
 
   const tests = [
-    { id: 0, name: "Haemoglobin Test", description: "Test Haemoglobin in your blood. Price: 0.5 USD", price: ethers.parseUnits("0.5", 6) },
-    { id: 1, name: "Blood Sugar Test", description: "Test your Blood Sugar . Price: 0.75 USD", price: ethers.parseUnits("0.75", 6)},
-    { id: 2, name: "Blood Uria Test", description: "Test the Uria content in your blood. Price: 1.25 USD", price: ethers.parseUnits("1.25", 6) },
-    { id: 3, name: "Serum Bilirubin Test", description: "Test Serum Bilirubin in your blood. Price: 2.0 USD", price: ethers.parseUnits("2.0", 6) },
-    { id: 4, name: "HDL Cholestrol Test", description: "Test your HDL Cholestrol. Price: 1.75 USD", price: ethers.parseUnits("1.75", 6) },
-    { id: 5, name: "FDL Cholestrol Test", description: "Test your FDL Cholestrol. Price: 2 USD", price: ethers.parseUnits("2", 6) }
+    { id: 0, name: "Haemoglobin Test", description: "Test Haemoglobin in your blood. Price: 1 USD", price: ethers.parseUnits("1", 6) },
+    { id: 1, name: "Blood Sugar Test", description: "Test your Blood Sugar . Price: 1 USD", price: ethers.parseUnits("1", 6)},
+    { id: 2, name: "Blood Uria Test", description: "Test the Uria content in your blood. Price: 1 USD", price: ethers.parseUnits("1", 6) },
+    { id: 3, name: "Serum Bilirubin Test", description: "Test Serum Bilirubin in your blood. Price: 2 USD", price: ethers.parseUnits("2", 6) },
+    { id: 4, name: "HDL Cholestrol Test", description: "Test your HDL Cholestrol. Price: 2 USD", price: ethers.parseUnits("2", 6) },
+    { id: 5, name: "FDL Cholestrol Test", description: "Test your FDL Cholestrol. Price: 3 USD", price: ethers.parseUnits("3", 6) }
   ];
 
   useEffect(() => {
