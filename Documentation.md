@@ -15,15 +15,47 @@ https://github.com/TeamMaverick5/Medibyte
 
 **Motivation behind the project**
 
-Medibyte was created to solve the issue of costs associated with medical facilities and the resulting temptation for people to succumb to unhealthy options because they are cheaper. We saw an opportunity to tokenise health statistics via a dynamic NFTs that also serve the purpose of handing back the ownership of medical records back to users. Our mission is to reward healthy alternatives and avoid healthcare congestion as a result of avoidable habits leading to adverse health conditions (think obesity, high blood pressure, smoking-related cancers). 
+The motivation for Medibyte stems from a critical need in the healthcare industry: encouraging patients to actively engage in improving and maintaining their health. Typically, patients undergo medical tests and treatments without any immediate or tangible incentives to follow through on health recommendations or track their progress over time.
+Medibyte aims to address this gap by leveraging blockchain technology to create a reward system that provides patients with health tokens based on their test results and health improvements. These tokens act as tangible incentives for patients to follow medical advice and make healthier lifestyle choices.
 
-Coming from a variety of backgrounds and healthcare systems, the Medibyte Team decided on this project given the ability for health to transcend geographical boundaries and create a sense of community towards a common goal. As a globalised society, we also recognise that healthier options sometimes aren't as accessible as they should be (e.g. in some countries, soft drink is cheaper than water in stores). Our aim is to create a transparent reward system that brings the cost of healthier options, parallel to the cheaper unhealthy options.  
+The primary goals of Medibyte are:
+
+1.Incentivize Health Improvements: By rewarding patients with tokens and dynamic NFTs that reflect their health progress, Medibyte motivates patients to stay engaged with their health management and strive for continuous improvement.
+
+2.Enhance Patient Engagement: The reward system fosters a more interactive and engaging experience for patients, encouraging them to regularly participate in health check-ups and follow through on treatments.
+
+3.Strengthen Patient-Provider Relationships: Healthcare providers can use Medibyte to build stronger relationships with their patients, enhancing patient loyalty and satisfaction through a system that recognizes and rewards their efforts.
+
+Medibyte envisions a healthcare ecosystem where patients are more proactive about their health, leading to better health outcomes and a more efficient healthcare system overall.
+
 
 **How it works**
 
-The project fetches up-to-date health records from an external API, constructs a dynamic NFT personalised to each individual based on their uploaded health records, and gives tokens to users able to evidence better medical testing relative to the last onchain record. Should a user wish to exchange USDC for Medicoin they are able to do so, making Medicoin a readily tradeable and dynamic token. 
+Medibyte is a web3-based health incentive platform that integrates blockchain technology to reward patients for health improvements. The platform consists of several components: smart contracts, IPFS for data storage, Chainlink services, and a frontend built with modern web technologies. Here’s a detailed breakdown of the architecture and how each part works together:
 
+1. Patient Selects Tests and Pays
+   
+Payment Options
+->On the Same Chain: If the patient and doctor are on the same chain (e.g., Avalanche), the patient pays for the tests   
+  directly to the Health_Contract using USDC.
+->Cross-Chain via CCIP: If the patient is on a different chain, they can still pay using USDC via Chainlink's Cross-Chain 
+  Interoperability Protocol (CCIP). This involves transferring data along with the tokens, where the data includes a 
+  function selector and its arguments.
+Function: selectTests
+->The patient calls the selectTests function in the Health_Contract, passing the selected tests and payment amount.
+->The contract stores the test selections in a mapping and logs the patient's details.
 
+2. Doctor Uploads Test Results
+
+Data Storage on IPFS:
+->The doctor performs the tests and uploads the results to IPFS, ensuring the data is decentralized and securely stored.
+Function: updatePatientHealthScore
+->The doctor then calls updatePatientHealthScore in the Health_Contract. This function sends a request to Chainlink's Off- 
+  Chain Computation (Functions) to process the patient's data.
+->The off-chain function retrieves the patient's data from IPFS, calculates the health score, determines the number of 
+  health tokens to be awarded, and updates the patient's NFT with a new URI reflecting the updated score.
+
+  
 ![alt text](image-1.png)
 
 
