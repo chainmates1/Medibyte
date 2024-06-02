@@ -86,7 +86,7 @@ Medibyte is a web3-based health incentive platform that integrates blockchain te
 - The claim process involves transferring the required tokens to the doctor and updating the patient’s NFT to reflect the new balance.
 
   
-![alt text](image-1.png)
+![alt text](img0.jpg)
 
 
 ## Backend
