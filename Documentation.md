@@ -4,7 +4,7 @@ Unlock your health potential with Medibyte - where health meets innovation. Revo
 
 Medibyte leverages the Blockchain Technology to reward users with on-chain tokens linked to unique dynamic NFTs. The project aims to incentivize healthy lifestyle choices by rewarding users with MediCoin tokens, based on off-chain health-related data.
 
-Accessible to users globally, Medibyte streamlines data-intensive processes like searching and maintaining health records through its user-friendly interface. Experience it live here: [Medibyte Platform]()
+Accessible to users globally, Medibyte streamlines data-intensive processes like searching and maintaining health records through its user-friendly interface. Experience it live here: [Medibyte Platform](https://test-client-mu.vercel.app/)
 
 *You should be met with a homepage that looks like this:*
 ![alt text](image.png)
