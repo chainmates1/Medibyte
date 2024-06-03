@@ -12,18 +12,18 @@ Accessible to users globally, Medibyte streamlines data-intensive processes like
 **The project consists of the following repository:**
 https://github.com/TeamMaverick5/Medibyte
 
-**Motivation behind the project**
+## Motivation behind the project
 
 The motivation for Medibyte stems from a critical need in the healthcare industry: encouraging patients to actively engage in improving and maintaining their health. Typically, patients undergo medical tests and treatments without any immediate or tangible incentives to follow through on health recommendations or track their progress over time.
 Medibyte aims to address this gap by leveraging blockchain technology to create a reward system that provides patients with health tokens based on their test results and health improvements. These tokens act as tangible incentives for patients to follow medical advice and make healthier lifestyle choices.
 
-The primary goals of Medibyte are:
+### The primary goals of Medibyte are:
 
-1.Incentivize Health Improvements: By rewarding patients with tokens and dynamic NFTs that reflect their health progress, Medibyte motivates patients to stay engaged with their health management and strive for continuous improvement.
+1.**Incentivize Health Improvements**: By rewarding patients with tokens and dynamic NFTs that reflect their health progress, Medibyte motivates patients to stay engaged with their health management and strive for continuous improvement.
 
-2.Enhance Patient Engagement: The reward system fosters a more interactive and engaging experience for patients, encouraging them to regularly participate in health check-ups and follow through on treatments.
+2.**Enhance Patient Engagement**: The reward system fosters a more interactive and engaging experience for patients, encouraging them to regularly participate in health check-ups and follow through on treatments.
 
-3.Strengthen Patient-Provider Relationships: Healthcare providers can use Medibyte to build stronger relationships with their patients, enhancing patient loyalty and satisfaction through a system that recognizes and rewards their efforts.
+3.**Strengthen Patient-Provider Relationships**: Healthcare providers can use Medibyte to build stronger relationships with their patients, enhancing patient loyalty and satisfaction through a system that recognizes and rewards their efforts.
 *
 Medibyte envisions a healthcare ecosystem where patients are more proactive about their health, leading to better health outcomes and a more efficient healthcare system overall.
 
